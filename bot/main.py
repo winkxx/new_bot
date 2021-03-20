@@ -62,7 +62,7 @@ def start_bot():
     client.add_handler(magfile_message_handler,group=3)
     client.add_handler(all_callback_handler,group=0)
 
-    client.run()
+    #client.run()
 
 
 

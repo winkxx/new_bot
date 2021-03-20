@@ -1,7 +1,6 @@
 from flask import Flask,request
 from requests import get,post
 from main import *
-import threading
 import os
 
 status =""
@@ -25,13 +24,13 @@ def index():
     global status
     if status=="":
         start_bot()
+        client.run()
 
         status="1"
         # threading.enumerate()  打印正在执行的线程,包括主线程和子线程
         #print(threading.enumerate())
         return "正在唤醒Bot", 200
     else:
-        print(status.is_alive())
 
         return "Bot 已经在运行", 200
 
