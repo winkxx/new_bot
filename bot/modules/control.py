@@ -105,13 +105,13 @@ def start_http_download(message):
     except Exception as e:
         print(f"start_http_download :{e}")'''
 
-def file_download(client, message,file_dir):
+async def file_download(client, message,file_dir):
     #os.system("df -lh")
     try:
         print("开始下载")
         sys.stdout.flush()
         currdownload = aria2.add_torrent(torrent_file_path=file_dir)
-        info=client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
+        info=await client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
         print("发送信息")
         sys.stdout.flush()
     except Exception as e:
