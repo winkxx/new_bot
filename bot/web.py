@@ -1,6 +1,6 @@
 from flask import Flask,request
 from requests import get,post
-from main import *
+
 import os
 
 status =""
@@ -23,8 +23,7 @@ def proxypost():
 def index():
     global status
     if status=="":
-        start_bot()
-        client.run()
+        os.system("python3 /bot/main.py")
 
         status="1"
         # threading.enumerate()  打印正在执行的线程,包括主线程和子线程
