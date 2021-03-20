@@ -1,6 +1,6 @@
 from flask import Flask,request
 from requests import get,post
-from main import start_bot
+from main import *
 import threading
 import os
 
@@ -32,7 +32,7 @@ def index():
         return "正在唤醒Bot", 200
     else:
         print(status.is_alive())
-        
+
         return "Bot 已经在运行", 200
 
 
