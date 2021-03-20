@@ -1,0 +1,46 @@
+{
+	"name": "Search photo bot",
+	"description": "Run telegram bot on heroku",
+	"repository": "https://github.com/666wcy/seach_photo-telegram-bot-heroku",
+	"keywords": ["telegram"],
+	"stack": "container",
+	"env": {
+			"Remote": {
+				"description": "Remote",
+				"value": ""
+			},
+			"Aria2_secret": {
+				"description": "Aria2_secret",
+				"value": ""
+			},
+			"Rclone": {
+				"description": "Rclone",
+				"value": ""
+			},
+			"Upload": {
+				"description": "Upload",
+				"value": ""
+			},
+			"Telegram_user_id": {
+				"description": "Telegram_user_id",
+				"value": ""
+			},
+			"Telegram_bot_api": {
+				"description": "Telegram_bot_api",
+				"value": ""
+			},
+			"Title": {
+				"description": "Title",
+				"value":""
+			},
+			"Api_hash": {
+				"description": "Api_hash",
+				"value":""
+			},
+			"Api_id": {
+				"description": "Api_id",
+				"value":""
+			}
+		}
+	
+}
