@@ -24,27 +24,17 @@ def proxypost():
 def index():
     global status
     if status=="":
-        t1 = threading.Thread(target=start_bot)  # 通过target指定子线程要执行的任务。可以通过args=元组 来指定test1的参数。
+        start_bot()
 
-        t1.start()  # 只有在调用start方法后才会创建子线程并执行
-
-        print(t1.is_alive())
-        status=t1
+        status="1"
         # threading.enumerate()  打印正在执行的线程,包括主线程和子线程
         #print(threading.enumerate())
         return "正在唤醒Bot", 200
     else:
         print(status.is_alive())
-        if status.is_alive()==True:
-            return "Bot 已经在运行", 200
-        elif status.is_alive()==False:
-            t1 = threading.Thread(target=start_bot)  # 通过target指定子线程要执行的任务。可以通过args=元组 来指定test1的参数。
+        
+        return "Bot 已经在运行", 200
 
-            t1.start()  # 只有在调用start方法后才会创建子线程并执行
-
-            print(t1.is_alive())
-            status=t1
-            return "重新唤醒Bot", 200
 
 
 
