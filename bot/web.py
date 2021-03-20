@@ -1,5 +1,6 @@
 from flask import Flask,request
 from requests import get,post
+from main import start_bot
 import threading
 import os
 
