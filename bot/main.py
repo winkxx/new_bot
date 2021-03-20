@@ -25,10 +25,8 @@ def start_bot():
     sys.stdout.flush()
     print("开始bot")
     print(Telegram_user_id)
-    client.start()
+    sys.stdout.flush()
 
-    client.send_message(chat_id=int(Telegram_user_id), text="Bot上线！！！")
-    client.stop()
 
     start_message_handler = MessageHandler(
         test,
