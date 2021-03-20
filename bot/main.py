@@ -1,68 +1,53 @@
-# -*- coding: utf-8 -*-
-from apscheduler.schedulers.background import BackgroundScheduler
-import sys
-from modules.check import new_clock, second_clock
-from config import client, Telegram_user_id
-from pyrogram.handlers import MessageHandler,CallbackQueryHandler
-from pyrogram import filters
-from modules.pixiv import start_download_pixiv,start_download_id
-from modules.control import send_telegram_file,all_callback
+from flask import Flask,request
+from requests import get,post
 
-def test(client, message):
-    print(client)
-    print(message)
-    message.reply_text(message.text)
-    client.send_message(chat_id=int(Telegram_user_id), text="test")
+import os
 
-def start_bot():
-    #scheduler = BlockingScheduler()
-    scheduler = BackgroundScheduler()
+status =""
+app = Flask(__name__)
+SITE_NAME = 'http://127.0.0.1:8080/'
 
-    scheduler.add_job(new_clock, "interval", seconds=60)
-    scheduler.add_job(second_clock, "interval", seconds=60)
-    print("开启监控")
+@app.route('/jsonrpc',methods=['POST'])
+def proxypost():
+    path="jsonrpc"
+    #print("post")
+    #print(f'{SITE_NAME}{path}')
+    url=f'{SITE_NAME}{path}?'
+    #print(request.form)
+    student = request.data
+    #print(student)
+    #获取到POST过来的数据，因为我这里传过来的数据需要转换一下编码。根据晶具体情况而定
+    return (post(url=url,data=student).content)
 
-    sys.stdout.flush()
-    print("开始bot")
-    print(Telegram_user_id)
-    sys.stdout.flush()
+@app.route('/', methods=['GET'])
+def index():
+    global status
+    if status=="":
+        os.system("python3 /bot/main.py")
 
+        status="1"
+        # threading.enumerate()  打印正在执行的线程,包括主线程和子线程
+        #print(threading.enumerate())
+        return "正在唤醒Bot", 200
+    else:
 
-    start_message_handler = MessageHandler(
-        test,
-        filters=filters.command("start")
-    )
-
-
-    pixivuser_message_handler = MessageHandler(
-        start_download_pixiv,
-        filters=filters.command("pixivuser")
-    )
-
-
-    pixivid_message_handler = MessageHandler(
-        start_download_id,
-        filters=filters.command("pixivpid")
-    )
-
-    magfile_message_handler = MessageHandler(
-        send_telegram_file,
-        filters=filters.command("magfile")
-    )
-
-
-    all_callback_handler = CallbackQueryHandler(
-        callback=all_callback,
-
-
-        )
-    client.add_handler(start_message_handler,group=1)
-    client.add_handler(pixivuser_message_handler,group=1)
-    client.add_handler(pixivid_message_handler,group=1)
-    client.add_handler(magfile_message_handler,group=3)
-    client.add_handler(all_callback_handler,group=0)
-
-    #client.run()
+        return "Bot 已经在运行", 200
 
 
 
+
+@app.route('/jsonrpc/',methods=['GET'])
+def proxyget():
+    path="jsonrpc"
+    #print(f'{SITE_NAME}{path}')
+    url=f'{SITE_NAME}{path}?'
+    #print(request.args)
+    par=request.args
+    #http://127.0.0.1:5000/jsonrpc?jsonrpc=2.0&method=aria2.getGlobalStat&id=QXJpYU5nXzE2MTM4ODAwNTBfMC44NTY2NjkzOTUyMjEzNDg3&params=WyJ0b2tlbjp3Y3k5ODE1MSJd&
+    return get(url=url,params=par).content
+
+
+if __name__ == '__main__':
+
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
