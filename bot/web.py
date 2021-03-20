@@ -19,21 +19,6 @@ def proxypost():
     #获取到POST过来的数据，因为我这里传过来的数据需要转换一下编码。根据晶具体情况而定
     return (post(url=url,data=student).content)
 
-@app.route('/', methods=['GET'])
-def index():
-    global status
-    if status=="":
-        os.system("python3 /bot/main.py")
-
-        status="1"
-        # threading.enumerate()  打印正在执行的线程,包括主线程和子线程
-        #print(threading.enumerate())
-        return "正在唤醒Bot", 200
-    else:
-
-        return "Bot 已经在运行", 200
-
-
 
 
 @app.route('/jsonrpc/',methods=['GET'])

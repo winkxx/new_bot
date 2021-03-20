@@ -19,4 +19,6 @@ chmod 0777 /bot/ -R
 rm -rf /new_bot
 
 nohup aria2c --conf-path=/root/.aria2/aria2.conf --rpc-listen-port=8080 --rpc-secret=$Aria2_secret &
-python3 /bot/web.py
+nohup python3 /bot/web.py &
+
+python3 /bot/main.py
