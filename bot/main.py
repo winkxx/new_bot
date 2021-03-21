@@ -6,7 +6,7 @@ from config import client, Telegram_user_id
 from pyrogram.handlers import MessageHandler,CallbackQueryHandler
 from pyrogram import filters
 from modules.pixiv import start_download_pixiv,start_download_id
-from modules.control import send_telegram_file,all_callback
+from modules.control import send_telegram_file,all_callback,start_http_download
 
 def test(client, message):
     print(client)
@@ -50,18 +50,21 @@ def start_bot():
         filters=filters.command("magfile")
     )
 
-
     all_callback_handler = CallbackQueryHandler(
         callback=all_callback,
-
-
         )
+
+    http_download_message_handler = MessageHandler(
+        start_http_download,
+        filters=filters.command("mirror")
+    )
+
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)
     client.add_handler(magfile_message_handler,group=3)
     client.add_handler(all_callback_handler,group=0)
-
+    client.add_handler(http_download_message_handler,group=1)
     client.run()
 
 if __name__ == '__main__':

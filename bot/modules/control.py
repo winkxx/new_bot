@@ -42,23 +42,7 @@ def start_download(message):
     except Exception as e:
         print(f"magnet :{e}")
 
-@bot.message_handler(commands=['mirror'],func=lambda message:str(message.chat.id) == str(Telegram_user_id))
-def start_http_download(message):
-    try:
-        keywords = str(message.text)
-        if str(BOT_name) in keywords:
-            keywords = keywords.replace(f"/mirror@{BOT_name} ", "")
-            print(keywords)
-            t1 = threading.Thread(target=http_download, args=(keywords,message))
-            t1.start()
-        else:
-            keywords = keywords.replace(f"/mirror ", "")
-            print(keywords)
-            t1 = threading.Thread(target=http_download, args=(keywords,message))
-            t1.start()
-
-    except Exception as e:
-        print(f"start_http_download :{e}")'''
+'''
 
 def run_rclone(dir,title,info,file_num,client, message):
 
@@ -113,7 +97,23 @@ def run_rclone(dir,title,info,file_num,client, message):
 
     return
 
+#@bot.message_handler(commands=['mirror'],func=lambda message:str(message.chat.id) == str(Telegram_user_id))
+def start_http_download(client, message):
+    try:
+        keywords = str(message.text)
+        if str(BOT_name) in keywords:
+            keywords = keywords.replace(f"/mirror@{BOT_name} ", "")
+            print(keywords)
+            t1 = threading.Thread(target=http_download, args=(client, message,keywords))
+            t1.start()
+        else:
+            keywords = keywords.replace(f"/mirror ", "")
+            print(keywords)
+            t1 = threading.Thread(target=http_download, args=(client, message,keywords))
+            t1.start()
 
+    except Exception as e:
+        print(f"start_http_download :{e}")
 
 def file_download(client, message,file_dir):
     #os.system("df -lh")
@@ -359,8 +359,8 @@ def http_download(client, message,url,):
         try:
             print("开始上传")
             file_dir=f"{currdownload.dir}/{currdownload.name}"
-            #run_rclone(file_dir,currdownload.name,info=info,file_num=1)
-            #currdownload.remove(force=True,files=True)
+            run_rclone(file_dir,currdownload.name,info=info,file_num=1,client=client, message=message)
+            currdownload.remove(force=True,files=True)
 
         except Exception as e:
             print(e)
