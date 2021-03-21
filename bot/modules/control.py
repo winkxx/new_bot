@@ -496,7 +496,7 @@ def send_telegram_file(client, message):
     loop = asyncio.get_event_loop()
     temp = loop.run_until_complete(temp_telegram_file(client, message))
     print(temp)
-
+    sys.stdout.flush()
     if temp ==False:
         return
     else:

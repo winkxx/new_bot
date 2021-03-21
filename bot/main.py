@@ -63,8 +63,8 @@ def start_bot():
     client.add_handler(all_callback_handler,group=0)
 
     client.run()
-    
+
 if __name__ == '__main__':
-    
+
     start_bot()
 

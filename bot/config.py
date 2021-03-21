@@ -7,7 +7,7 @@ import os
 import json
 
 
-Aria2_host="https://127.0.0.1"
+Aria2_host="http://127.0.0.1"
 Aria2_port="8080"
 Aria2_secret=os.environ.get('Aria2_secret')
 App_title=os.environ.get('App_title')
