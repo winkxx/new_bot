@@ -8,8 +8,8 @@ import os
 import time
 import threading
 import asyncio
-'''import nest_asyncio
-nest_asyncio.apply()'''
+import nest_asyncio
+nest_asyncio.apply()
 '''
 
 def run_rclone(dir,title,info,file_num):
@@ -107,13 +107,13 @@ def start_http_download(message):
     except Exception as e:
         print(f"start_http_download :{e}")'''
 
-async def file_download(client, message,file_dir):
+def file_download(client, message,file_dir):
     #os.system("df -lh")
     try:
         print("开始下载")
         sys.stdout.flush()
         currdownload = aria2.add_torrent(torrent_file_path=file_dir)
-        info=await client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
+        info=client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
         print("发送信息")
         sys.stdout.flush()
     except Exception as e:
@@ -496,15 +496,14 @@ def send_telegram_file(client, message):
     loop = asyncio.get_event_loop()
     temp = loop.run_until_complete(temp_telegram_file(client, message))
     print(temp)
-    loop.stop()
-    loop.close()
+
     if temp ==False:
         return
     else:
         file_dir=temp
-    t1 = threading.Thread(target=file_download, args=(client, message, file_dir))
-    t1.start()
-    return
+        t1 = threading.Thread(target=file_download, args=(client, message, file_dir))
+        t1.start()
+        return
 
 
 
