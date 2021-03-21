@@ -182,6 +182,8 @@ def loginpic():
         mytoken = requests.post(url, headers=headers, data=json.dumps(body), verify=False)
         # .json()['data']['token']
         print(mytoken)
+        sys.stdout.flush()
+        
         if mytoken.json()['message'] == "success":
             print("登陆成功")
             Mytoken = mytoken.json()['data']['token']
@@ -190,8 +192,10 @@ def loginpic():
             f1.close()
         else:
             print("登录失败")
-    except:
-        print("登录函数失败")
+            sys.stdout.flush()
+    except Exception as e:
+        print(f"登录函数失败 {e}")
+        sys.stdout.flush()
 
 def check():
     try:
