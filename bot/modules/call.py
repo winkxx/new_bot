@@ -1,6 +1,6 @@
 
 from config import aria2
-from modules.picacg import add_download
+#from modules.picacg import add_download
 import sys
 
 
