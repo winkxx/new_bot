@@ -82,24 +82,24 @@ async def start_down_telegram_file(client, message):
             await client.send_message(text="下载文件失败", chat_id=message.chat.id, parse_mode='markdown')
             return "False"
 
-def progress(current, total,client,message):
+def progress(current, total,client,message,name):
 
     print(f"{current * 100 / total:.1f}%")
     pro=f"{current * 100 / total:.1f}%"
-    client.edit_message_text(chat_id=message.chat.id,message_id=message.message_id,text=f"下载中:{pro}")
+    client.edit_message_text(chat_id=message.chat.id,message_id=message.message_id,text=f"{name}\n下载中:{pro}")
 
 
 
 
 def tgfile_download(client, message, new_message):
-
+    file_name=new_message.document.file_name
     info=client.send_message(text="开始下载", chat_id=message.chat.id, parse_mode='markdown')
-    file = client.download_media(message=new_message, progress=progress, progress_args=(client,info,))
+    file = client.download_media(message=new_message, progress=progress, progress_args=(client,info,file_name,))
     try:
         print("开始上传")
         file_dir =file
         files_num =1
-        run_rclone(file_dir, "none", info=info, file_num=files_num, client=client, message=message)
+        run_rclone(file_dir, file_name, info=info, file_num=files_num, client=client, message=message)
         os.remove(path=file)
         return
 
@@ -113,7 +113,10 @@ def tgfile_download(client, message, new_message):
 def get_telegram_file(client, message):
     loop = asyncio.get_event_loop()
     temp = loop.run_until_complete(start_down_telegram_file(client, message))
-    print(temp)
+    try:
+        loop.stop()
+    except Exception as e:
+        print(f"loop.stop() :{e}")
     sys.stdout.flush()
     if temp =="False":
         return
