@@ -9,6 +9,7 @@ from modules.pixiv import start_download_pixiv,start_download_id
 from modules.control import send_telegram_file,start_http_download,start_download
 from modules.call import all_callback
 from modules.moretg import get_telegram_file
+from modules.picacg import seach_main
 
 def test(client, message):
     print(client)
@@ -69,7 +70,11 @@ def start_bot():
         get_telegram_file,
         filters=filters.command("downtgfile")
     )
-
+    seach_main_file_message_handler = MessageHandler(
+        seach_main,
+        filters=filters.command("search")
+    )
+    
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)
@@ -78,6 +83,7 @@ def start_bot():
     client.add_handler(http_download_message_handler,group=1)
     client.add_handler(magnet_download_message_handler, group=1)
     client.add_handler(telegram_file_message_handler, group=1)
+    client.add_handler(seach_main_file_message_handler, group=1)
     client.run()
 
 if __name__ == '__main__':
