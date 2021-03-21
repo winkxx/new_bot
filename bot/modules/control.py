@@ -7,7 +7,9 @@ from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
 import os
 import time
 import threading
-
+import asyncio
+'''import nest_asyncio
+nest_asyncio.apply()'''
 '''
 
 def run_rclone(dir,title,info,file_num):
@@ -468,31 +470,41 @@ def all_callback(client, message):
         print(f"all_callback :{e}")
 
 
-#commands=['magfile']
-async def send_telegram_file(client, message):
-
+async def temp_telegram_file(client, message):
     answer = await client.ask(chat_id=message.chat.id, text='请发送种子文件,或输入 /cancel 取消')
     print(answer)
-    print(answer.document)
-    if answer.document==None:
+    print(answer.text)
+    if answer.document == None:
         await client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
-        return
-    elif answer.text=="/cancel":
+        return False
+    elif answer.text == "/cancel":
         await client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
-        return
+        return False
     else:
         try:
 
             file_dir = await client.download_media(message=answer, progress=progress)
-            t1 = threading.Thread(target=file_download, args=(client, message,file_dir))
-            t1.start()
-            return
+
+            return file_dir
         except Exception as e:
             print(f"{e}")
             await client.send_message(text="下载文件失败", chat_id=message.chat.id, parse_mode='markdown')
-            return
-    #await client.send_message(chat_id=message.chat.id, text=f'Your name is: {answer.text}')
-    #client.send_message(text="请发送文件,或输入 /cancel 取消", chat_id=message.chat.id, parse_mode='markdown')
+            return False
+
+#commands=['magfile']
+def send_telegram_file(client, message):
+    loop = asyncio.get_event_loop()
+    temp = loop.run_until_complete(temp_telegram_file(client, message))
+    print(temp)
+    loop.stop()
+    loop.close()
+    if temp ==False:
+        return
+    else:
+        file_dir=temp
+    t1 = threading.Thread(target=file_download, args=(client, message, file_dir))
+    t1.start()
+    return
 
 
 
