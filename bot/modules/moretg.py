@@ -113,10 +113,6 @@ def tgfile_download(client, message, new_message):
 def get_telegram_file(client, message):
     loop = asyncio.get_event_loop()
     temp = loop.run_until_complete(start_down_telegram_file(client, message))
-    try:
-        loop.stop()
-    except Exception as e:
-        print(f"loop.stop() :{e}")
     sys.stdout.flush()
     if temp =="False":
         return
