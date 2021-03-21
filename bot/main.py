@@ -74,7 +74,7 @@ def start_bot():
         seach_main,
         filters=filters.command("search")
     )
-    
+
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)

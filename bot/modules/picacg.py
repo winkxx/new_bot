@@ -8,6 +8,7 @@ import json
 import re
 import time
 import requests
+import threading
 import subprocess
 import sys
 from config import App_title
@@ -313,6 +314,8 @@ def downmany(url, imgname, title, zhang):
 
 def seach(client, message):
     try:
+        print("检查登录")
+        sys.stdout.flush()
         check()
         # bot.reply_to(message, message.text)
         keywords = str(message.text)
@@ -450,7 +453,9 @@ def add_download(client,call):
 
 #@bot.message_handler(commands=['search'])
 def seach_main(client, message):
-    seach(client=client, message=message)
+    
+    t1 = threading.Thread(target=seach, args=(client, message))
+    t1.start()
     return
 
 
