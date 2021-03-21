@@ -67,24 +67,23 @@ async def start_down_telegram_file(client, message):
     try:
         answer = await client.ask(chat_id=message.chat.id, text='请发送TG文件,或输入 /cancel 取消')
 
-        print(answer)
-        print(answer.text)
-        if answer.text == "/cancel":
+        info=answer
+        if info.text == "/cancel":
             await client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
-            yield "False"
-        elif answer.document == None:
+            return "False"
+        elif info.document == None:
             await client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
-            yield "False"
+            return "False"
 
         else:
             try:
-                yield await answer
+                return await answer
 
             except Exception as e:
                 print(f"标记1 {e}")
                 sys.stdout.flush()
                 await client.send_message(text="下载文件失败", chat_id=message.chat.id, parse_mode='markdown')
-                yield "False"
+                return "False"
     except Exception as e:
         print(f"start_down_telegram_file {e}")
         sys.stdout.flush()
