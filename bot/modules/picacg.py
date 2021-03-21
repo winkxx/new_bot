@@ -276,10 +276,12 @@ def down(url, imgname, title):
                         f.write(r.content)
                 # time.sleep(0.5)
                 break
-            except:
-                print("下载失败，正在重试")
-    except:
-        print("下载失败")
+            except Exception as e:
+                print(f"下载失败，正在重试 {e}")
+                sys.stdout.flush()
+    except Exception as e:
+        print(f"下载失败 {e}")
+        sys.stdout.flush()
 
 def downmany(url, imgname, title, zhang):
     try:
@@ -314,10 +316,12 @@ def downmany(url, imgname, title, zhang):
                         f.write(r.content)
                 # time.sleep(0.5)
                 break
-            except:
-                print("下载失败，正在重试")
-    except:
-        print("下载多章失败")
+            except Exception as e:
+                print(f"下载失败，正在重试 {e}")
+                sys.stdout.flush()
+    except Exception as e:
+        print(f"下载多章失败 {e}")
+        sys.stdout.flush()
 
 def seach(client, message):
     try:
@@ -341,7 +345,7 @@ def seach(client, message):
         for img_json in main_html.json()["data"]["comics"]["docs"]:
             # print(img_json)
             img_url = img_json['thumb']["fileServer"] + "/static/" + img_json['thumb']['path']
-            
+
             # print(img_url)
             title = img_json["title"]
             book_id = img_json["_id"]
@@ -370,16 +374,16 @@ def add_download(client,call):
 
         import re
         check()
-        caption = str(call.text)
+        caption = str(call.caption)
         comicid = re.findall("book_id:(.*)", caption, re.S)[0]
         title = re.findall("title:(.*?)\n", caption, re.S)[0]
-        message_dict = call.message.json
-        message_id = str(message_dict["message_id"])
-        message_chat_id = str(message_dict["chat"]["id"])
+
+        message_id = call.message_id
+        message_chat_id = call.chat.id
 
         title = title.replace(" ", "").replace("\\", "").replace("/", "").replace("|", "").replace(" ", "")
         mulu_page = 1
-        info=client.send_message(message_chat_id, text=" 开始下载")
+        info=client.send_message(chat_id=message_chat_id, text=" 开始下载")
 
         #已下载话数
         hua_down_num=0
@@ -396,6 +400,7 @@ def add_download(client,call):
             print(main_html.text)
             benzihua_num=main_html.json()["data"]["eps"]["total"]
             print(f"本子话数{benzihua_num}")
+            sys.stdout.flush()
 
 
 
