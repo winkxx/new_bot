@@ -69,6 +69,7 @@ async def start_down_telegram_file(client, message):
 
         info=answer
         print(info)
+        sys.stdout.flush()
         if info.text == "/cancel":
             await client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
             return "False"
@@ -78,7 +79,7 @@ async def start_down_telegram_file(client, message):
 
         else:
             try:
-                return answer
+                return info
 
             except Exception as e:
                 print(f"标记1 {e}")

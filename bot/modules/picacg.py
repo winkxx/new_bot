@@ -374,12 +374,12 @@ def add_download(client,call):
 
         import re
         check()
-        caption = str(call.caption)
+        caption = str(call.message.caption)
         comicid = re.findall("book_id:(.*)", caption, re.S)[0]
         title = re.findall("title:(.*?)\n", caption, re.S)[0]
 
-        message_id = call.message_id
-        message_chat_id = call.chat.id
+        message_id = call.message.message_id
+        message_chat_id = call.message.chat.id
 
         title = title.replace(" ", "").replace("\\", "").replace("/", "").replace("|", "").replace(" ", "")
         mulu_page = 1
