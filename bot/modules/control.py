@@ -476,10 +476,10 @@ async def temp_telegram_file(client, message):
     print(answer.text)
     if answer.document == None:
         await client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
-        return False
+        return "False"
     elif answer.text == "/cancel":
         await client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
-        return False
+        return "False"
     else:
         try:
 
@@ -489,7 +489,7 @@ async def temp_telegram_file(client, message):
         except Exception as e:
             print(f"{e}")
             await client.send_message(text="下载文件失败", chat_id=message.chat.id, parse_mode='markdown')
-            return False
+            return "False"
 
 #commands=['magfile']
 def send_telegram_file(client, message):
@@ -497,7 +497,7 @@ def send_telegram_file(client, message):
     temp = loop.run_until_complete(temp_telegram_file(client, message))
     print(temp)
     sys.stdout.flush()
-    if temp ==False:
+    if temp =="False":
         return
     else:
         file_dir=temp
