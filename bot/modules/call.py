@@ -54,7 +54,8 @@ def file_pause(gid):
 
 def all_callback(client, message):
     try:
-
+        print(message)
+        sys.stdout.flush()
         if "Remove" in message.data:
             the_gid=str(message.data).replace("Remove ","")
             info_text = file_del(gid=the_gid)
