@@ -233,11 +233,14 @@ def check():
         # print(main_html.json())
         if main_html.json()["code"] != 200:
             print("token过期，即将重新登录")
+            sys.stdout.flush()
             loginpic()
         else:
             print("token有效")
-    except:
-        print("检查函数失败")
+            sys.stdout.flush()
+    except Exception as e:
+        print(f"检查函数失败 {e}")
+        sys.stdout.flush()
 
 def down(url, imgname, title):
     try:
@@ -453,7 +456,7 @@ def add_download(client,call):
 
 #@bot.message_handler(commands=['search'])
 def seach_main(client, message):
-    
+
     t1 = threading.Thread(target=seach, args=(client, message))
     t1.start()
     return

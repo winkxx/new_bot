@@ -7,7 +7,6 @@ import nest_asyncio
 import threading
 import time
 import re
-from pyromod import listen
 nest_asyncio.apply()
 os.system("df -lh")
 
