@@ -245,8 +245,77 @@ def start_download_id(client, message):
     client.send_photo(chat_id=message.chat.id,photo=imgname , caption=send_text)
     os.system("rm '" + imgname + "'")
 
+def progress(current, total,client,message,name):
+
+    print(f"{current * 100 / total:.1f}%")
+    pro=f"{current * 100 / total:.1f}%"
+    client.edit_message_text(chat_id=message.chat.id,message_id=message.message_id,text=f"{name}\n上传中:{pro}")
 
 
+def start_download_pixivtg(client, message):
+    # print(message)
+    keywords = str(message.text)
+    keywords = keywords.replace("/pixivusertg ", "")
+    print(keywords)
+    artistid = keywords
+    idurl = f"https://www.pixiv.net/ajax/user/{artistid}/profile/all"
+    print(idurl)
+    header = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 5.8; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.86 Safari/537.36",
+    }
+    html2 = requests.get(url=idurl, headers=header)
+    print(html2)
+
+    illusts = html2.json()['body']['illusts']
+    info = client.send_message(chat_id=message.chat.id, text="开始下载")
+    img_num = len(illusts)
+    img_su_num = 0
+    img_er_num = 0
+    for id in illusts:
+        print(id)
+        info_url = f"https://www.pixiv.net/touch/ajax/illust/details?illust_id={id}"
+        ht = requests.get(url=info_url, headers=header)
+        info_json = ht.json()
+        img_url = info_json['body']['illust_details']['url_big']
+        title = info_json['body']['illust_details']['meta']['title'] + f"id-{id}"
+
+        # .author_details.profile_img.main
+        author = f"{info_json['body']['author_details']['user_name']}"
+
+        title = str(title).replace("#", "").replace(author, "").replace(":", "").replace("@", "").replace("/", "")
+        author = str(author).replace(":", "").replace("@", "").replace("/", "")
+        print(img_url)
+
+        download_result = download(url=img_url, title=title, author=keywords, id=id)
+        if download_result == True:
+            img_su_num = img_su_num + 1
+        else:
+            img_er_num = img_er_num + 1
+
+        text = f"Author:{author}\n" \
+               f"Number of pictures:{img_num}\n" \
+               f"Number of successes:{img_su_num}\n" \
+               f"Number of errors:{img_er_num}\n" \
+               f"Progessbar:\n{progessbar(img_su_num, img_num)}"
+
+        client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
+    print("开始压缩")
+    sys.stdout.flush()
+    name = zip_ya(keywords)
+    print(name)
+    print("压缩完成，开始上传")
+    del_path(keywords)
+    try:
+        run_upload_rclone(client=client, dir=name, title=name, info=info, file_num=1)
+        client.send_document(chat_id=info.chat.id, document=name, caption=name, progress=progress, progress_args=(client,info,name,))
+        print("uploading")
+    except Exception as e:
+        print(f"{e}")
+        sys.stdout.flush()
+        client.send_message(chat_id=message.chat.id, text="文件上传失败")
+
+    client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
+    os.system("rm '" + name + "'")
 
 
 

@@ -5,7 +5,7 @@ from modules.check import new_clock, second_clock
 from config import client, Telegram_user_id
 from pyrogram.handlers import MessageHandler,CallbackQueryHandler
 from pyrogram import filters
-from modules.pixiv import start_download_pixiv,start_download_id
+from modules.pixiv import start_download_pixiv,start_download_id,start_download_pixivtg
 from modules.control import send_telegram_file,start_http_download,start_download
 from modules.call import all_callback
 from modules.moretg import get_telegram_file
@@ -75,6 +75,11 @@ def start_bot():
         filters=filters.command("search")
     )
 
+    start_download_idtg_message_handler = MessageHandler(
+        start_download_pixivtg,
+        filters=filters.command("pixivusertg")
+    )
+
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)
@@ -84,6 +89,7 @@ def start_bot():
     client.add_handler(magnet_download_message_handler, group=1)
     client.add_handler(telegram_file_message_handler, group=1)
     client.add_handler(seach_main_file_message_handler, group=1)
+    client.add_handler(start_download_idtg_message_handler, group=1)
     client.run()
 
 if __name__ == '__main__':
