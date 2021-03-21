@@ -59,10 +59,10 @@ def start_bot():
         filters=filters.command("mirror")
     )
     magnet_download_message_handler = MessageHandler(
-        start_download(),
+        start_download,
         filters=filters.command("magnet")
     )
-    
+
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)
