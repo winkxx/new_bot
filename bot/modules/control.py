@@ -11,7 +11,7 @@ import subprocess
 import re
 
 import nest_asyncio
-from pyromod import listen
+
 nest_asyncio.apply()
 os.system("df -lh")
 
@@ -593,6 +593,7 @@ def progress(current, total):
 
 
 async def temp_telegram_file(client, message):
+    from pyromod import listen
     answer = await client.ask(chat_id=message.chat.id, text='请发送种子文件,或输入 /cancel 取消')
     print(answer)
     print(answer.text)
