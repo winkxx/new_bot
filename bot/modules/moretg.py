@@ -70,20 +70,21 @@ async def start_down_telegram_file(client, message):
         print(answer)
         print(answer.text)
         if answer.text == "/cancel":
-            client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
-            return "False"
+            await client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
+            yield "False"
         elif answer.document == None:
-            client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
-            return "False"
+            await client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
+            yield "False"
 
         else:
             try:
-                return answer
+                yield await answer
+
             except Exception as e:
                 print(f"标记1 {e}")
                 sys.stdout.flush()
                 await client.send_message(text="下载文件失败", chat_id=message.chat.id, parse_mode='markdown')
-                return "False"
+                yield "False"
     except Exception as e:
         print(f"start_down_telegram_file {e}")
         sys.stdout.flush()
