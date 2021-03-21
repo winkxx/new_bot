@@ -14,35 +14,215 @@ import re
 import nest_asyncio
 
 nest_asyncio.apply()
-'''
+os.system("df -lh")
+
+def the_download(client, message,url):
+
+    try:
+        download = aria2.add_magnet(url)
+    except Exception as e:
+        print(e)
+        if (str(e).endswith("No URI to download.")):
+            print("No link provided!")
+            client.send_message(chat_id=message.chat.id,text="No link provided!",parse_mode='Markdown')
+            return None
+    prevmessagemag = None
+    info=client.send_message(chat_id=message.chat.id,text="Downloading",parse_mode='markdown')
+
+    inline_keyboard = [
+        [
+            InlineKeyboardButton(
+                text=f"Remove",
+                callback_data=f"Remove {download.gid}"
+            )
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+    client.edit_message_text(text="Downloading", chat_id=info.chat.id, message_id=info.message_id,
+                             parse_mode='markdown', reply_markup=reply_markup)
 
 
+    temp_text=""
+    while download.is_active:
+        try:
+            download.update()
+            print("Downloading metadata")
+            if temp_text!="Downloading metadata":
+                client.edit_message_text(text="Downloading metadata",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=reply_markup)
+                temp_text="Downloading metadata"
+            barop = progessbar(download.completed_length,download.total_length)
+
+            updateText = f"{download.status} \n" \
+                         f"'{download.name}'\n" \
+                         f"Progress : {hum_convert(download.completed_length)}/{hum_convert(download.total_length)} \n" \
+                         f"Peers:{download.connections}\n" \
+                         f"Speed {hum_convert(download.download_speed)}/s\n" \
+                         f"{barop}\n" \
+                         f"Free:{get_free_space_mb()}GB"
+            if prevmessagemag != updateText:
+                print(updateText)
+                client.edit_message_text(text=updateText,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=reply_markup)
+                prevmessagemag = updateText
+            time.sleep(2)
+        except:
+
+            try:
+                download.update()
+            except Exception as e:
+                if (str(e).endswith("is not found")):
+                    print("Metadata Cancelled/Failed")
+                    print("Metadata couldn't be downloaded")
+                    if temp_text!="Metadata Cancelled/Failed":
+                        client.edit_message_text(text="Metadata Cancelled/Failed",chat_id=info.chat.id,message_id=info.message_id,parse_mode='Markdown')
+                        temp_text="Metadata Cancelled/Failed"
+                    return None
+            time.sleep(2)
 
 
+    time.sleep(2)
+    match = str(download.followed_by_ids[0])
+    downloads = aria2.get_downloads()
+    currdownload = None
+    for download in downloads:
+        if download.gid == match:
+            currdownload = download
+            break
+    print("Download complete")
+
+    new_inline_keyboard = [
+        [
+            InlineKeyboardButton(
+                text="Resume",
+                callback_data=f"Resume {currdownload.gid}"
+            ),
+            InlineKeyboardButton(
+                text=f"Pause",
+                callback_data=f"Pause {currdownload.gid}"
+            ),
+            InlineKeyboardButton(
+                text=f"Remove",
+                callback_data=f"Remove {currdownload.gid}"
+            )
+        ]
+    ]
+
+    new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
+    client.edit_message_text(text="Download complete", chat_id=info.chat.id, message_id=info.message_id,
+                             parse_mode='markdown', reply_markup=new_reply_markup)
+
+    prevmessage = None
+
+    while currdownload.is_active or not currdownload.is_complete:
+
+        try:
+            currdownload.update()
+        except Exception as e:
+            if (str(e).endswith("is not found")):
+                print("Magnet Deleted")
+                print("Magnet download was removed")
+                client.edit_message_text(text="Magnet download was removed",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+                break
+            print(e)
+            print("Issue in downloading!")
+
+        if currdownload.status == 'removed':
+            print("Magnet was cancelled")
+            print("Magnet download was cancelled")
+            client.edit_message_text(text="Magnet download was cancelled",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+            break
+
+        if currdownload.status == 'error':
+            print("Mirror had an error")
+            currdownload.remove(force=True, files=True)
+            print("Magnet failed to resume/download!\nRun /cancel once and try again.")
+            client.edit_message_text(text="Magnet failed to resume/download!\nRun /cancel once and try again.",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=new_reply_markup)
+            break
+
+        print(f"Magnet Status? {currdownload.status}")
+
+        if currdownload.status == "active":
+            try:
+                currdownload.update()
+                barop = progessbar(currdownload.completed_length,currdownload.total_length)
+
+                updateText = f"{download.status} \n" \
+                             f"'{currdownload.name}'\n" \
+                             f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
+                             f"Peers:{currdownload.connections}\n" \
+                             f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
+                             f"{barop}\n" \
+                             f"Free:{get_free_space_mb()}GB"
+
+                if prevmessage != updateText:
+                    print(f"更新状态\n{updateText}")
+                    client.edit_message_text(text=updateText,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=new_reply_markup)
+                    prevmessage = updateText
+                time.sleep(2)
+            except Exception as e:
+                if (str(e).endswith("is not found")):
+                    break
+                print(e)
+                print("Issue in downloading!")
+                time.sleep(2)
+        elif currdownload.status == "paused":
+            try:
+                currdownload.update()
+                barop = progessbar(currdownload.completed_length,currdownload.total_length)
+
+                updateText = f"{download.status} \n" \
+                             f"'{currdownload.name}'\n" \
+                             f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
+                             f"Peers:{currdownload.connections}\n" \
+                             f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
+                             f"{barop}\n" \
+                             f"Free:{get_free_space_mb()}GB"
+
+                if prevmessage != updateText:
+                    print(f"更新状态\n{updateText}")
+                    client.edit_message_text(text=updateText,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=new_reply_markup)
+                    prevmessage = updateText
+                time.sleep(2)
+            except Exception as e:
+                print(e)
+                print("Download Paused Flood")
+                time.sleep(2)
+        time.sleep(2)
+
+        time.sleep(1)
+
+    if currdownload.is_complete:
+        print(currdownload.name)
+        try:
+            print("开始上传")
+            file_dir=f"{currdownload.dir}/{currdownload.name}"
+            files_num=int(len(currdownload.files))
+            run_rclone(file_dir,currdownload.name,info=info,file_num=files_num,client=client,message=message)
+            currdownload.remove(force=True,files=True)
+
+        except Exception as e:
+            print(e)
+            print("Upload Issue!")
+    return None
 
 
-
-
-
-@bot.message_handler(commands=['magnet'],func=lambda message:str(message.chat.id) == str(Telegram_user_id))
-def start_download(message):
+#@bot.message_handler(commands=['magnet'],func=lambda message:str(message.chat.id) == str(Telegram_user_id))
+def start_download(client, message):
     try:
         keywords = str(message.text)
         if str(BOT_name) in keywords:
             keywords = keywords.replace(f"/magnet@{BOT_name} ", "")
             print(keywords)
-            t1 = threading.Thread(target=the_download, args=(keywords,message))
+            t1 = threading.Thread(target=the_download, args=(client, message,keywords))
             t1.start()
         else:
             keywords = keywords.replace(f"/magnet ", "")
             print(keywords)
-            t1 = threading.Thread(target=the_download, args=(keywords,message))
+            t1 = threading.Thread(target=the_download, args=(client, message,keywords))
             t1.start()
 
     except Exception as e:
         print(f"magnet :{e}")
-
-'''
 
 def run_rclone(dir,title,info,file_num,client, message):
 
@@ -246,7 +426,7 @@ def file_download(client, message,file_dir):
             return
     return None
 
-def http_download(client, message,url,):
+def http_download(client, message,url):
     try:
         currdownload = aria2.add_uris([url])
         info = client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
