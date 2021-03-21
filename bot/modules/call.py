@@ -1,6 +1,6 @@
 
 from config import aria2
-#from modules.picacg import add_download
+from modules.picacg import add_download
 import sys
 
 
@@ -54,8 +54,7 @@ def file_pause(gid):
 
 def all_callback(client, message):
     try:
-        print(message)
-        sys.stdout.flush()
+
         if "Remove" in message.data:
             the_gid=str(message.data).replace("Remove ","")
             info_text = file_del(gid=the_gid)
@@ -73,6 +72,6 @@ def all_callback(client, message):
 
             client.answer_callback_query(callback_query_id=message.id,text="开始下载",cache_time=3)
 
-            #add_download(call=call)
+            add_download(client=client,call=message)
     except Exception as e:
         print(f"all_callback :{e}")
