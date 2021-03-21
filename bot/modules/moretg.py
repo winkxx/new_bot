@@ -64,22 +64,26 @@ def run_rclone(dir,title,info,file_num,client, message):
     return
 
 async def start_down_telegram_file(client, message):
-    answer = await client.ask(chat_id=message.chat.id, text='请发送TG文件,或输入 /cancel 取消')
-    print(answer)
-    print(answer.text)
-    if answer.document == None:
-        await client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
-        return "False"
-    elif answer.text == "/cancel":
-        await client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
-        return "False"
-    else:
-        try:
-            return answer
-        except Exception as e:
-            print(f"{e}")
-            await client.send_message(text="下载文件失败", chat_id=message.chat.id, parse_mode='markdown')
+    try:
+        answer = await client.ask(chat_id=message.chat.id, text='请发送TG文件,或输入 /cancel 取消')
+        print(answer)
+        print(answer.text)
+        if answer.text == "/cancel":
+            await client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
             return "False"
+        elif answer.document == None:
+            await client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
+            return "False"
+    
+        else:
+            try:
+                return answer
+            except Exception as e:
+                print(f"{e}")
+                await client.send_message(text="下载文件失败", chat_id=message.chat.id, parse_mode='markdown')
+                return "False"
+    except Exception as e:
+        print(f"start_down_telegram_file {e}")
 
 def progress(current, total,client,message,name):
 

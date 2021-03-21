@@ -183,7 +183,7 @@ def loginpic():
         # .json()['data']['token']
         print(mytoken)
         sys.stdout.flush()
-        
+
         if mytoken.json()['message'] == "success":
             print("登陆成功")
             Mytoken = mytoken.json()['data']['token']
@@ -362,9 +362,9 @@ def seach(client, message):
             new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
             client.send_photo(chat_id=message.chat.id, photo=img.content, caption=text, reply_markup=new_reply_markup)
 
-
-    except:
-        None
+    except Exception as e:
+        print(f"seach {e}")
+        sys.stdout.flush()
 
 def add_download(client,call):
 
