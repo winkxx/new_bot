@@ -74,7 +74,7 @@ async def start_down_telegram_file(client, message):
         elif answer.document == None:
             await client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
             return "False"
-    
+
         else:
             try:
                 return answer
@@ -112,10 +112,17 @@ def tgfile_download(client, message, new_message):
         return
 
 
+def get_msg(client, message):
+    return asyncio.run(start_down_telegram_file(client, message))
+
+# now in your sync code you should be able to use:
+msg = get_msg()
+
 #commands=['downtgfile']
 def get_telegram_file(client, message):
-    loop = asyncio.get_event_loop()
-    temp = loop.run_until_complete(start_down_telegram_file(client, message))
+    '''loop = asyncio.get_event_loop()
+    temp = loop.run_until_complete(start_down_telegram_file(client, message))'''
+    temp=get_msg(client, message)
     sys.stdout.flush()
     if temp =="False":
         return

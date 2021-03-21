@@ -341,7 +341,7 @@ def seach(client, message):
         for img_json in main_html.json()["data"]["comics"]["docs"]:
             # print(img_json)
             img_url = img_json['thumb']["fileServer"] + "/static/" + img_json['thumb']['path']
-            img = requests.get(url=img_url)
+            
             # print(img_url)
             title = img_json["title"]
             book_id = img_json["_id"]
@@ -360,7 +360,7 @@ def seach(client, message):
             ]
 
             new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
-            client.send_photo(chat_id=message.chat.id, photo=img.content, caption=text, reply_markup=new_reply_markup)
+            client.send_photo(chat_id=message.chat.id, photo=img_url, caption=text, reply_markup=new_reply_markup)
 
     except Exception as e:
         print(f"seach {e}")
