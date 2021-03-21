@@ -6,7 +6,8 @@ from config import client, Telegram_user_id
 from pyrogram.handlers import MessageHandler,CallbackQueryHandler
 from pyrogram import filters
 from modules.pixiv import start_download_pixiv,start_download_id
-from modules.control import send_telegram_file,all_callback,start_http_download,start_download
+from modules.control import send_telegram_file,start_http_download,start_download
+from modules.call import all_callback
 from modules.moretg import get_telegram_file
 
 def test(client, message):
@@ -63,7 +64,7 @@ def start_bot():
         start_download,
         filters=filters.command("magnet")
     )
-    
+
     telegram_file_message_handler = MessageHandler(
         get_telegram_file,
         filters=filters.command("downtgfile")
