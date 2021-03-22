@@ -35,10 +35,11 @@ def run_rclonecopy(onedir,twodir,client, message):
     print(shell)
     sys.stdout.flush()
     try:
-        info=client.send_message(chat_id=message.chat.id,text=shell)
+        client.send_message(chat_id=message.chat.id, text=shell)
+        info=client.send_message(chat_id=message.chat.id ,text=shell)
     except Exception as e:
         print(f"信息发送错误 {e}")
-        
+
 
     cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
                            stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1)
