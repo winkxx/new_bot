@@ -37,6 +37,8 @@ def run_rclonecopy(onedir,twodir,client, message):
     try:
         client.send_message(chat_id=message.chat.id, text=shell)
         info=client.send_message(chat_id=message.chat.id ,text=shell)
+        print(info)
+        sys.stdout.flush()
     except Exception as e:
         print(f"信息发送错误 {e}")
         sys.stdout.flush()
