@@ -359,6 +359,10 @@ def seach(client, message):
                     InlineKeyboardButton(
                         text="下载本子",
                         callback_data=f"down"
+                    ),
+                    InlineKeyboardButton(
+                        text="发送本子到TG",
+                        callback_data=f"tgdown"
                     )
                 ]
             ]
@@ -369,6 +373,16 @@ def seach(client, message):
     except Exception as e:
         print(f"seach {e}")
         sys.stdout.flush()
+        
+
+def progress(current, total,client,message,name):
+
+    print(f"{current * 100 / total:.1f}%")
+    pro=f"{current * 100 / total:.1f}%"
+    try:
+        client.edit_message_text(chat_id=message.chat.id,message_id=message.message_id,text=f"{name}\n上传中:{pro}")
+    except Exception as e:
+        print("e")
 
 def add_download(client,call):
 
@@ -461,6 +475,97 @@ def add_download(client,call):
             client.send_message(message_chat_id, text="文件上传失败")
         client.delete_message(message_chat_id, message_id)
         os.system("rm '" + name + "'")
+
+
+def add_downloadtg(client, call):
+    import re
+    check()
+    caption = str(call.message.caption)
+    comicid = re.findall("book_id:(.*)", caption, re.S)[0]
+    title = re.findall("title:(.*?)\n", caption, re.S)[0]
+
+    message_id = call.message.message_id
+    message_chat_id = call.message.chat.id
+
+    title = title.replace(" ", "").replace("\\", "").replace("/", "").replace("|", "").replace(" ", "")
+    mulu_page = 1
+    info = client.send_message(chat_id=message_chat_id, text=" 开始下载")
+
+    # 已下载话数
+    hua_down_num = 0
+
+    while True:
+
+        nurl = "comics/" + str(comicid) + f"/eps?page={mulu_page}"
+        url = "https://picaapi.picacomic.com/" + nurl
+        headers = getheaders(nurl, "GET")
+        # shou_url="https://picaapi.picacomic.com/users/favourite?s=dd&page=1"
+        # main_url="https://picaapi.picacomic.com/categories"
+        main_html = requests.get(url=url, headers=headers, verify=False)
+        data = main_html.json()["data"]["eps"]["total"]
+        print(main_html.text)
+        benzihua_num = main_html.json()["data"]["eps"]["total"]
+        print(f"本子话数{benzihua_num}")
+        sys.stdout.flush()
+
+        for eps in main_html.json()['data']['eps']['docs']:
+
+            epsid = eps['order']
+            page = 1
+            img_name = 1
+            zhang = eps["title"]
+            wake_clock()
+            download_process_text = f"当前下载话:{zhang}\n" \
+                                    f"下载进度:{hua_down_num}/{benzihua_num}\n"
+
+            client.edit_message_text(text=download_process_text, chat_id=info.chat.id, message_id=info.message_id,
+                                     parse_mode='markdown')
+
+            # 该循环下载单话
+            while True:
+                nurl = "comics/" + str(comicid) + "/order/" + str(epsid) + "/pages?page=" + str(page)
+
+                url = "https://picaapi.picacomic.com/" + nurl
+                headers = getheaders(nurl, "GET")
+                img = requests.get(url=url, headers=headers, verify=False)
+                img_lu = img.json()["data"]["pages"]["docs"]
+                for picture in img_lu:
+                    img_url = str(picture['media']['fileServer']) + "/static/" + str(picture['media']['path'])
+                    print(img_name)
+                    print(img_url)
+                    downmany(img_url, img_name, title, zhang)
+                    img_name = img_name + 1
+                page = page + 1
+                print(img.json()["data"]["pages"]["page"])
+                print(img.json()["data"]["pages"]["pages"])
+
+                print(f"该话页数")
+
+                if img.json()["data"]["pages"]["page"] == img.json()["data"]["pages"]["pages"]:
+                    break
+            hua_down_num = hua_down_num + 1
+
+        book_pages = int(main_html.json()["data"]["eps"]["pages"])
+        if book_pages == mulu_page:
+            break
+        mulu_page = mulu_page + 1
+    print("开始压缩")
+    sys.stdout.flush()
+    name = zip_ya(title)
+    print(name)
+    print("压缩完成，开始上传")
+    del_path(title)
+    try:
+        client.send_document(chat_id=info.chat.id, document=name, caption=title, progress=progress,
+                             progress_args=(client, info, title,))
+
+        print("uploading")
+    except Exception as e:
+        print(f"{e}")
+        sys.stdout.flush()
+        client.send_message(message_chat_id, text="文件上传失败")
+    client.delete_message(message_chat_id, message_id)
+    os.system("rm '" + name + "'")
 
 
 #@bot.message_handler(commands=['search'])

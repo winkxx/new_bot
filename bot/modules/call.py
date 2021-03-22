@@ -1,6 +1,6 @@
 
 from config import aria2
-from modules.picacg import add_download
+from modules.picacg import add_download,add_downloadtg
 import sys
 
 
@@ -68,11 +68,16 @@ def all_callback(client, message):
             the_gid=str(message.data).replace("Pause ","")
             info_text = file_pause(gid=the_gid)
             client.answer_callback_query(callback_query_id=message.id,text=info_text,cache_time=3)
-        elif "down" in message.data:
+        elif "down" == message.data:
 
 
             client.answer_callback_query(callback_query_id=message.id,text="开始下载",cache_time=3)
 
             add_download(client=client,call=message)
+        elif "tgdown" == message.data:
+
+            client.answer_callback_query(callback_query_id=message.id, text="开始下载", cache_time=3)
+
+            add_downloadtg(client=client, call=message)
     except Exception as e:
         print(f"all_callback :{e}")
