@@ -152,9 +152,9 @@ def del_path(path):
         # print( 'delete dir %s' % path)
 
 
-def start_download_pixiv(client, message):
+async def start_download_pixiv(client, message):
 
-        #print(message)
+        print(message)
         keywords = str(message.text)
         keywords = keywords.replace("/pixivuser ", "")
         print(keywords)
@@ -167,9 +167,12 @@ def start_download_pixiv(client, message):
         html2 = requests.get(url=idurl, headers=header)
         print(html2)
 
-
+        print(message.chat.id)
         illusts=html2.json()['body']['illusts']
-        info=client.send_message(chat_id=message.chat.id,text="开始下载")
+
+        info = await client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
+        print(info)
+        print(info.chat)
         img_num=len(illusts)
         img_su_num=0
         img_er_num=0
@@ -200,7 +203,7 @@ def start_download_pixiv(client, message):
                  f"Number of errors:{img_er_num}\n" \
                  f"Progessbar:\n{progessbar(img_su_num,img_num)}"
 
-            client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
+            await client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
         print("开始压缩")
         sys.stdout.flush()
         name = zip_ya(keywords)
@@ -213,13 +216,13 @@ def start_download_pixiv(client, message):
         except Exception as e:
             print(f"{e}")
             sys.stdout.flush()
-            client.send_message(chat_id=message.chat.id, text="文件上传失败")
+            await client.send_message(chat_id=message.chat.id, text="文件上传失败")
 
-        client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
+        await client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
         os.system("rm '" + name + "'")
 
 
-def start_download_id(client, message):
+async def start_download_id(client, message):
     # print(message)
     keywords = str(message.text)
     keywords = keywords.replace("/pixivpid ", "")
@@ -242,17 +245,19 @@ def start_download_id(client, message):
             f.write(r.content)
             imgname = f"{keywords}.png"
     send_text=f"{title}\nAuthor:{author}\nPid:{keywords}"
-    client.send_photo(chat_id=message.chat.id,photo=imgname , caption=send_text)
+    await client.send_photo(chat_id=message.chat.id,photo=imgname , caption=send_text)
     os.system("rm '" + imgname + "'")
 
 def progress(current, total,client,message,name):
 
     print(f"{current * 100 / total:.1f}%")
     pro=f"{current * 100 / total:.1f}%"
-    client.edit_message_text(chat_id=message.chat.id,message_id=message.message_id,text=f"{name}\n上传中:{pro}")
+    try:
+        client.edit_message_text(chat_id=message.chat.id,message_id=message.message_id,text=f"{name}\n上传中:{pro}")
+    except Exception as e:
+        print("e")
 
-
-def start_download_pixivtg(client, message):
+async def start_download_pixivtg(client, message):
     # print(message)
     keywords = str(message.text)
     keywords = keywords.replace("/pixivusertg ", "")
@@ -267,7 +272,7 @@ def start_download_pixivtg(client, message):
     print(html2)
 
     illusts = html2.json()['body']['illusts']
-    info = client.send_message(chat_id=message.chat.id, text="开始下载")
+    info = await client.send_message(chat_id=message.chat.id, text="开始下载")
     img_num = len(illusts)
     img_su_num = 0
     img_er_num = 0
@@ -298,7 +303,7 @@ def start_download_pixivtg(client, message):
                f"Number of errors:{img_er_num}\n" \
                f"Progessbar:\n{progessbar(img_su_num, img_num)}"
 
-        client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
+        await client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
     print("开始压缩")
     sys.stdout.flush()
     name = zip_ya(keywords)
@@ -306,16 +311,19 @@ def start_download_pixivtg(client, message):
     print("压缩完成，开始上传")
     del_path(keywords)
     try:
-        run_upload_rclone(client=client, dir=name, title=name, info=info, file_num=1)
-        client.send_document(chat_id=info.chat.id, document=name, caption=name, progress=progress, progress_args=(client,info,name,))
+        #run_upload_rclone(client=client, dir=name, title=name, info=info, file_num=1)
+        await client.send_document(chat_id=info.chat.id, document=name, caption=name, progress=progress, progress_args=(client,info,name,))
         print("uploading")
+
     except Exception as e:
         print(f"{e}")
         sys.stdout.flush()
-        client.send_message(chat_id=message.chat.id, text="文件上传失败")
+        await client.send_message(chat_id=message.chat.id, text="文件上传失败")
+        return
 
-    client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
+    await client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
     os.system("rm '" + name + "'")
+    return
 
 
 
