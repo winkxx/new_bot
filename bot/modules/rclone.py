@@ -34,14 +34,18 @@ def run_rclonecopy(onedir,twodir,client, message):
     shell=f"rclone copy {onedir} {twodir}  -v --stats-one-line --stats=3s --log-file=\"{name}.log\" "
     print(shell)
     sys.stdout.flush()
-    info=client.send_message(chat_id=message.chat.id,text=shell)
+    try:
+        info=client.send_message(chat_id=message.chat.id,text=shell)
+    except Exception as e:
+        print(f"信息发送错误 {e}")
+        
 
     cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
                            stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1)
     # 实时输出
     temp_text=None
     while True:
-        time.sleep(6)
+        time.sleep(3)
         fname = f'{name}.log'
         with open(fname, 'r') as f:  #打开文件
             try:
@@ -65,7 +69,11 @@ def run_rclonecopy(onedir,twodir,client, message):
                      f"传输进度：`{upload_Progress}`\n" \
                      f"传输速度：`{upload_speed}`\n" \
                      f"剩余时间:`{part_time}`"
-                    client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+                    try:
+                        client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+                    except Exception as e:
+                        print(f"信息修改错误 {e}")
+                        continue
                     temp_text = last_line
                 f.close()
 
