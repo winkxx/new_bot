@@ -39,6 +39,7 @@ def run_rclonecopy(onedir,twodir,client, message):
         info=client.send_message(chat_id=message.chat.id ,text=shell)
     except Exception as e:
         print(f"信息发送错误 {e}")
+        sys.stdout.flush()
 
 
     cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
