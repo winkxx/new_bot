@@ -222,6 +222,148 @@ def start_download(client, message):
 
     except Exception as e:
         print(f"magnet :{e}")
+        
+
+def http_downloadtg(client, message,url):
+    try:
+        currdownload = aria2.add_uris([url])
+        info = client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
+    except Exception as e:
+        print(e)
+        if (str(e).endswith("No URI to download.")):
+            print("No link provided!")
+            client.send_message(chat_id=message.chat.id,text="No link provided!",parse_mode='markdown')
+            return None
+    new_inline_keyboard = [
+        [
+            InlineKeyboardButton(
+                text="Resume",
+                callback_data=f"Resume {currdownload.gid}"
+            ),
+            InlineKeyboardButton(
+                text=f"Pause",
+                callback_data=f"Pause {currdownload.gid}"
+            ),
+            InlineKeyboardButton(
+                text=f"Remove",
+                callback_data=f"Remove {currdownload.gid}"
+            )
+        ]
+    ]
+
+    new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
+    client.edit_message_text(text="Downloading", chat_id=info.chat.id, message_id=info.message_id,
+                             parse_mode='markdown', reply_markup=new_reply_markup)
+
+
+    prevmessage=None
+    while currdownload.is_active or not currdownload.is_complete:
+
+        try:
+            currdownload.update()
+        except Exception as e:
+            if (str(e).endswith("is not found")):
+                print("url Deleted")
+                print("url download was removed")
+                client.edit_message_text(text="url download was removed",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+                break
+            print(e)
+            print("url in downloading!")
+
+        if currdownload.status == 'removed':
+            print("url was cancelled")
+            print("url download was cancelled")
+            client.edit_message_text(text="Magnet download was cancelled",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+            break
+
+        if currdownload.status == 'error':
+            print("url had an error")
+            currdownload.remove(force=True, files=True)
+            print("url failed to resume/download!.")
+            client.edit_message_text(text="Magnet failed to resume/download!\nRun /cancel once and try again.",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+            break
+
+        print(f"url Status? {currdownload.status}")
+
+        if currdownload.status == "active":
+            try:
+                currdownload.update()
+                barop = progessbar(currdownload.completed_length,currdownload.total_length)
+
+                updateText = f"{currdownload.status} \n" \
+                             f"'{currdownload.name}'\n" \
+                             f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
+                             f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
+                             f"{barop}\n" \
+                             f"Free:{get_free_space_mb()}GB"
+
+                if prevmessage != updateText:
+                    print(f"更新状态\n{updateText}")
+                    client.edit_message_text(text=updateText,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=new_reply_markup)
+                    prevmessage = updateText
+                time.sleep(2)
+            except Exception as e:
+                if (str(e).endswith("is not found")):
+                    break
+                print(e)
+                print("Issue in downloading!")
+                time.sleep(2)
+        elif currdownload.status == "paused":
+            try:
+                currdownload.update()
+                barop = progessbar(currdownload.completed_length,currdownload.total_length)
+
+                updateText = f"{currdownload.status} \n" \
+                             f"'{currdownload.name}'\n" \
+                             f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
+                             f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
+                             f"{barop}\n" \
+                             f"Free:{get_free_space_mb()}GB"
+
+                if prevmessage != updateText:
+                    print(f"更新状态\n{updateText}")
+                    client.edit_message_text(text=updateText,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=new_reply_markup)
+                    prevmessage = updateText
+                time.sleep(2)
+            except Exception as e:
+                print(e)
+                print("Download Paused Flood")
+                time.sleep(2)
+        time.sleep(2)
+
+        time.sleep(1)
+    if currdownload.is_complete:
+        print(currdownload.name)
+        try:
+            print("开始上传")
+            file_dir=f"{currdownload.dir}/{currdownload.name}"
+            client.send_document(chat_id=info.chat.id, document=file_dir, caption=currdownload.name, progress=progress,
+                                       progress_args=(client, info, currdownload.name,))
+
+            currdownload.remove(force=True,files=True)
+
+        except Exception as e:
+            print(e)
+            print("Upload Issue!")
+    return None
+
+#@bot.message_handler(commands=['mirrortg'],func=lambda message:str(message.chat.id) == str(Telegram_user_id))
+def start_http_downloadtg(client, message):
+    try:
+        keywords = str(message.text)
+        if str(BOT_name) in keywords:
+            keywords = keywords.replace(f"/mirrortg@{BOT_name} ", "")
+            print(keywords)
+            t1 = threading.Thread(target=http_downloadtg, args=(client, message,keywords))
+            t1.start()
+        else:
+            keywords = keywords.replace(f"/mirrortg ", "")
+            print(keywords)
+            t1 = threading.Thread(target=http_downloadtg, args=(client, message,keywords))
+            t1.start()
+
+    except Exception as e:
+        print(f"start_http_download :{e}")
 
 def run_rclone(dir,title,info,file_num,client, message):
 
@@ -626,148 +768,8 @@ def send_telegram_file(client, message):
         t1 = threading.Thread(target=file_download, args=(client, message, file_dir))
         t1.start()
         return
-    
-    
-def http_downloadtg(client, message,url):
-    try:
-        currdownload = aria2.add_uris([url])
-        info = client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
-    except Exception as e:
-        print(e)
-        if (str(e).endswith("No URI to download.")):
-            print("No link provided!")
-            client.send_message(chat_id=message.chat.id,text="No link provided!",parse_mode='markdown')
-            return None
-    new_inline_keyboard = [
-        [
-            InlineKeyboardButton(
-                text="Resume",
-                callback_data=f"Resume {currdownload.gid}"
-            ),
-            InlineKeyboardButton(
-                text=f"Pause",
-                callback_data=f"Pause {currdownload.gid}"
-            ),
-            InlineKeyboardButton(
-                text=f"Remove",
-                callback_data=f"Remove {currdownload.gid}"
-            )
-        ]
-    ]
-
-    new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
-    client.edit_message_text(text="Downloading", chat_id=info.chat.id, message_id=info.message_id,
-                             parse_mode='markdown', reply_markup=new_reply_markup)
 
 
-    prevmessage=None
-    while currdownload.is_active or not currdownload.is_complete:
-
-        try:
-            currdownload.update()
-        except Exception as e:
-            if (str(e).endswith("is not found")):
-                print("url Deleted")
-                print("url download was removed")
-                client.edit_message_text(text="url download was removed",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
-                break
-            print(e)
-            print("url in downloading!")
-
-        if currdownload.status == 'removed':
-            print("url was cancelled")
-            print("url download was cancelled")
-            client.edit_message_text(text="Magnet download was cancelled",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
-            break
-
-        if currdownload.status == 'error':
-            print("url had an error")
-            currdownload.remove(force=True, files=True)
-            print("url failed to resume/download!.")
-            client.edit_message_text(text="Magnet failed to resume/download!\nRun /cancel once and try again.",chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
-            break
-
-        print(f"url Status? {currdownload.status}")
-
-        if currdownload.status == "active":
-            try:
-                currdownload.update()
-                barop = progessbar(currdownload.completed_length,currdownload.total_length)
-
-                updateText = f"{currdownload.status} \n" \
-                             f"'{currdownload.name}'\n" \
-                             f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
-                             f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
-                             f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
-
-                if prevmessage != updateText:
-                    print(f"更新状态\n{updateText}")
-                    client.edit_message_text(text=updateText,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=new_reply_markup)
-                    prevmessage = updateText
-                time.sleep(2)
-            except Exception as e:
-                if (str(e).endswith("is not found")):
-                    break
-                print(e)
-                print("Issue in downloading!")
-                time.sleep(2)
-        elif currdownload.status == "paused":
-            try:
-                currdownload.update()
-                barop = progessbar(currdownload.completed_length,currdownload.total_length)
-
-                updateText = f"{currdownload.status} \n" \
-                             f"'{currdownload.name}'\n" \
-                             f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
-                             f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
-                             f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
-
-                if prevmessage != updateText:
-                    print(f"更新状态\n{updateText}")
-                    client.edit_message_text(text=updateText,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=new_reply_markup)
-                    prevmessage = updateText
-                time.sleep(2)
-            except Exception as e:
-                print(e)
-                print("Download Paused Flood")
-                time.sleep(2)
-        time.sleep(2)
-
-        time.sleep(1)
-    if currdownload.is_complete:
-        print(currdownload.name)
-        try:
-            print("开始上传")
-            file_dir=f"{currdownload.dir}/{currdownload.name}"
-            client.send_document(chat_id=info.chat.id, document=file_dir, caption=currdownload.name, progress=progress,
-                                       progress_args=(client, info, currdownload.name,))
-
-            currdownload.remove(force=True,files=True)
-
-        except Exception as e:
-            print(e)
-            print("Upload Issue!")
-    return None
-
-#@bot.message_handler(commands=['mirrortg'],func=lambda message:str(message.chat.id) == str(Telegram_user_id))
-def start_http_downloadtg(client, message):
-    try:
-        keywords = str(message.text)
-        if str(BOT_name) in keywords:
-            keywords = keywords.replace(f"/mirror@{BOT_name} ", "")
-            print(keywords)
-            t1 = threading.Thread(target=http_downloadtg, args=(client, message,keywords))
-            t1.start()
-        else:
-            keywords = keywords.replace(f"/mirror ", "")
-            print(keywords)
-            t1 = threading.Thread(target=http_downloadtg, args=(client, message,keywords))
-            t1.start()
-
-    except Exception as e:
-        print(f"start_http_download :{e}")
 
 
 
