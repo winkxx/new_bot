@@ -10,6 +10,7 @@ from modules.control import send_telegram_file,start_http_download,start_downloa
 from modules.call import all_callback
 from modules.moretg import get_telegram_file
 from modules.picacg import seach_main
+from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels
 
 def test(client, message):
     print(client)
@@ -83,7 +84,22 @@ def start_bot():
         start_http_downloadtg,
         filters=filters.command("mirrortg")
     )
-    
+    start_rclonecopy_message_handler = MessageHandler(
+        start_rclonecopy,
+        filters=filters.command("rclonecopy")
+    )
+
+    start_rclonelsd_message_handler = MessageHandler(
+        start_rclonelsd,
+        filters=filters.command("rclonelsd")
+    )
+
+    start_rclone_message_handler = MessageHandler(
+        start_rclonels,
+        filters=filters.command("rclone")
+    )
+
+
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)
@@ -95,6 +111,9 @@ def start_bot():
     client.add_handler(seach_main_file_message_handler, group=1)
     client.add_handler(start_download_idtg_message_handler, group=1)
     client.add_handler(start_http_downloadtg_message_handler, group=1)
+    client.add_handler(start_rclonecopy_message_handler, group=1)
+    client.add_handler(start_rclonelsd_message_handler, group=1)
+    client.add_handler(start_rclone_message_handler, group=1)
     client.run()
 
 if __name__ == '__main__':
