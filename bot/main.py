@@ -14,7 +14,7 @@ from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start
 
 async def chexk_group(_, client, query):
     print(query)
-    info=await client.get_chat_member(chat_id=-491366926,user_id=query.from_user.id)
+    info=await client.get_chat_member(chat_id=-49136626,user_id=query.from_user.id)
     print(info)
     sys.stdout.flush()
     return True
