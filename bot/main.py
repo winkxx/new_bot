@@ -12,12 +12,13 @@ from modules.moretg import get_telegram_file,get_file_id,sendfile_by_id
 from modules.picacg import seach_main
 from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start_rclonecopyurl
 
-def func(_, __, query):
+def chexk_group(_, client, query):
     print(query)
+    info=client.get_chat_member(chat_id="-491366926",user_id=query.from_user.id)
+    print(info)
     sys.stdout.flush()
-    return query.data == "pyrogram"
+    return True
 
-static_data_filter = filters.create(func)
 
 
 def test(client, message):
@@ -44,7 +45,7 @@ def start_bot():
     start_message_handler = MessageHandler(
         test,
         #filters=filters.command("start") & filters.user(Telegram_user_id)
-        filters=filters.create(func)
+        filters=filters.create(chexk_group)
     )
 
     pixivuser_message_handler = MessageHandler(
