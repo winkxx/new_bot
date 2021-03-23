@@ -383,7 +383,7 @@ async def start_download_pixivphoto(client, message):
                 file_dir = os.path.join(root, file)
                 print(file_dir, file)
 
-                if os.path.getsize(file_dir) < 1024 * 10:
+                if os.path.getsize(file_dir) < 1024*1024* 10:
                     img_list.append(InputMediaPhoto(media=file_dir, caption=file))
 
                 if len(img_list)==10:
