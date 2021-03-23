@@ -108,8 +108,8 @@ def start_bot():
         get_file_id,
         filters=filters.command("getfileid")
     )
-    send_telegram_file_message_handler = MessageHandler(
-        send_telegram_file,
+    sendfile_by_id_message_handler = MessageHandler(
+        sendfile_by_id,
         filters=filters.command("getfile")
     )
 
@@ -124,12 +124,12 @@ def start_bot():
     client.add_handler(seach_main_file_message_handler, group=1)
     client.add_handler(start_download_idtg_message_handler, group=1)
     client.add_handler(start_http_downloadtg_message_handler, group=1)
-    client.add_handler(start_rclonecopy_message_handler, group=1)
+    client.add_handler(start_rclonecopy_message_handler , group=1)
     client.add_handler(start_rclonelsd_message_handler, group=1)
     client.add_handler(start_rclone_message_handler, group=1)
     client.add_handler(start_rclonecopyurl_message_handler, group=1)
     client.add_handler(get_file_id_message_handler, group=1)
-    client.add_handler(send_telegram_file_message_handler, group=1)
+    client.add_handler(sendfile_by_id_message_handler, group=1)
     client.run()
 
 if __name__ == '__main__':
