@@ -21,11 +21,11 @@ async def chexk_group(_, client, query):
 
 
 
-def test(client, message):
+async def test(client, message):
     print(client)
     print(message)
     message.reply_text(message.text)
-    client.send_message(chat_id=int(Telegram_user_id), text="test")
+    await client.send_message(chat_id=int(Telegram_user_id), text="test")
 
 def start_bot():
     #scheduler = BlockingScheduler()
