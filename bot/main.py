@@ -12,6 +12,14 @@ from modules.moretg import get_telegram_file,get_file_id,sendfile_by_id
 from modules.picacg import seach_main
 from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start_rclonecopyurl
 
+def func(_, __, query):
+    print(query)
+    sys.stdout.flush()
+    return query.data == "pyrogram"
+
+static_data_filter = filters.create(func)
+
+
 def test(client, message):
     print(client)
     print(message)
@@ -35,7 +43,8 @@ def start_bot():
 
     start_message_handler = MessageHandler(
         test,
-        filters=filters.command("start") & filters.user(Telegram_user_id)
+        #filters=filters.command("start") & filters.user(Telegram_user_id)
+        filters=filters.create(func)
     )
 
     pixivuser_message_handler = MessageHandler(
