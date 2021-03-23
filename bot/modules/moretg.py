@@ -137,8 +137,8 @@ def get_telegram_file(client, message):
         t1 = threading.Thread(target=tgfile_download, args=(client, message, temp))
         t1.start()
         return
-    
-    
+
+
 async def get_file_id(client, message):
     try:
         answer = await client.ask(chat_id=message.chat.id, text='请发送TG文件,或输入 /cancel 取消')
@@ -148,22 +148,22 @@ async def get_file_id(client, message):
         sys.stdout.flush()
         if info.text == "/cancel":
             await client.send_message(text="取消发送", chat_id=message.chat.id, parse_mode='markdown')
-            return 
+            return
         elif info.document == None:
             await client.send_message(text="发送的不是文件", chat_id=message.chat.id, parse_mode='markdown')
-            return 
+            return
 
         else:
             try:
                 print(answer)
-                await client.send_message(text="获取ID文件失败", chat_id=message.chat.id, parse_mode='markdown')
-
+                await client.send_message(text=f"获取ID文件成功\nFileid:{answer.document.file_id}", chat_id=message.chat.id, parse_mode='markdown')
+                return 
 
             except Exception as e:
                 print(f"标记2 {e}")
                 sys.stdout.flush()
                 await client.send_message(text="获取ID文件失败", chat_id=message.chat.id, parse_mode='markdown')
-                return 
+                return
     except Exception as e:
         print(f"start_down_telegram_file {e}")
         sys.stdout.flush()
