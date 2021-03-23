@@ -382,14 +382,21 @@ async def start_download_pixivphoto(client, message):
             for file in files:
                 file_dir = os.path.join(root, file)
                 print(file_dir, file)
-                img_list.append(InputMediaPhoto(media=file_dir, caption=file))
+
+                if os.path.getsize(file_dir) < 1024 * 10:
+                    img_list.append(InputMediaPhoto(media=file_dir, caption=file))
+
                 if len(img_list)==10:
                     await client.send_chat_action(chat_id=message.chat.id,action="upload_photo")
+                    print("开始上传")
+                    sys.stdout.flush()
                     await client.send_media_group(chat_id=message.chat.id,media=img_list)
                     img_list = []
 
         if len(img_list) != 0:
             await client.send_chat_action(chat_id=message.chat.id, action="upload_photo")
+            print("开始上传")
+            sys.stdout.flush()
             await client.send_media_group(chat_id=message.chat.id, media=img_list)
 
 
