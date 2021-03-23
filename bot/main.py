@@ -10,7 +10,7 @@ from modules.control import send_telegram_file,start_http_download,start_downloa
 from modules.call import all_callback
 from modules.moretg import get_telegram_file
 from modules.picacg import seach_main
-from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels
+from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start_rclonecopyurl
 
 def test(client, message):
     print(client)
@@ -99,6 +99,11 @@ def start_bot():
         filters=filters.command("rclone")
     )
 
+    start_rclonecopyurl_message_handler = MessageHandler(
+        start_rclonecopyurl,
+        filters=filters.command("rclonecopyurl")
+    )
+
 
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
@@ -114,6 +119,7 @@ def start_bot():
     client.add_handler(start_rclonecopy_message_handler, group=1)
     client.add_handler(start_rclonelsd_message_handler, group=1)
     client.add_handler(start_rclone_message_handler, group=1)
+    client.add_handler(start_rclonecopyurl_message_handler, group=1)
     client.run()
 
 if __name__ == '__main__':

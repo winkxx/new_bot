@@ -7,6 +7,8 @@ import nest_asyncio
 import threading
 import time
 import re
+from config import aria2, BOT_name
+from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
 nest_asyncio.apply()
 os.system("df -lh")
 
@@ -135,3 +137,4 @@ def get_telegram_file(client, message):
         t1 = threading.Thread(target=tgfile_download, args=(client, message, temp))
         t1.start()
         return
+
