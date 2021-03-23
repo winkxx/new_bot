@@ -167,3 +167,20 @@ async def get_file_id(client, message):
     except Exception as e:
         print(f"start_down_telegram_file {e}")
         sys.stdout.flush()
+
+async def sendfile_by_id(client, message):
+    try:
+        file = message.text.split()[1]
+        print(f"sendfile_by_id {file} ")
+        sys.stdout.flush()
+        await client.send_document(chat_id=message.chat.id, document=file)
+        return 
+
+
+
+    except Exception as e:
+        print(f"sendfile_by_id :{e}")
+        await client.send_message(text=f"文件发送失败\n{e}", chat_id=message.chat.id, parse_mode='markdown')
+
+        sys.stdout.flush()
+        return 
