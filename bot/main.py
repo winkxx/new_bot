@@ -8,7 +8,7 @@ from pyrogram import filters
 from modules.pixiv import start_download_pixiv,start_download_id,start_download_pixivtg
 from modules.control import send_telegram_file,start_http_download,start_download,start_http_downloadtg
 from modules.call import all_callback
-from modules.moretg import get_telegram_file
+from modules.moretg import get_telegram_file,get_file_id
 from modules.picacg import seach_main
 from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start_rclonecopyurl
 
@@ -104,6 +104,10 @@ def start_bot():
         filters=filters.command("rclonecopyurl")
     )
 
+    get_file_id_message_handler = MessageHandler(
+        get_file_id,
+        filters=filters.command("getfileid")
+    )
 
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
@@ -120,6 +124,7 @@ def start_bot():
     client.add_handler(start_rclonelsd_message_handler, group=1)
     client.add_handler(start_rclone_message_handler, group=1)
     client.add_handler(start_rclonecopyurl_message_handler, group=1)
+    client.add_handler(get_file_id_message_handler, group=1)
     client.run()
 
 if __name__ == '__main__':
