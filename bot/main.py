@@ -24,6 +24,7 @@ def start_bot():
 
     scheduler.add_job(new_clock, "interval", seconds=60)
     scheduler.add_job(second_clock, "interval", seconds=60)
+    scheduler.start()
     print("开启监控")
 
     sys.stdout.flush()
