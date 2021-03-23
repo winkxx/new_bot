@@ -106,7 +106,7 @@ def run_rclonecopyurl(url,client, message):
     Upload=os.environ.get('Upload')
     twodir =f"{Rclone_remote}:{Upload}"
     name=f"{str(message.message_id)}_{str(message.chat.id)}"
-    shell=f"rclone copyurl \"{url}\" {twodir}  --auto-filename --no-clobbe -v --stats-one-line --stats=2s --log-file=\"{name}.log\" "
+    shell=f"rclone copyurl \"{url}\" {twodir} --auto-filename --no-clobber -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
     print(shell)
     sys.stdout.flush()
     try:
