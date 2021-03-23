@@ -14,10 +14,14 @@ from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start
 
 async def chexk_group(_, client, query):
     print(query)
-    info=await client.get_chat_member(chat_id=-1001491554277,user_id=query.from_user.id)
-    print(info)
-    sys.stdout.flush()
-    return True
+    try:
+        info=await client.get_chat_member(chat_id=int(Telegram_user_id),user_id=query.from_user.id)
+        print(info)
+        sys.stdout.flush()
+        return True
+    except:
+        return False
+
 
 
 
@@ -45,7 +49,7 @@ def start_bot():
     start_message_handler = MessageHandler(
         test,
         #filters=filters.command("start") & filters.user(Telegram_user_id)
-        filters=filters.create(chexk_group)
+        filters=filters.command("start") & filters.create(chexk_group)
     )
 
     pixivuser_message_handler = MessageHandler(
