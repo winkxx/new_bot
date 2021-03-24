@@ -546,14 +546,17 @@ async def start_download_pixivtele(client, message):
 
                 except Exception as e:
                     print(f"标记4 {e}")
+
                     sys.stdout.flush()
+                    continue
 
         put_text = "<p>Tips:5M以上的图片会被压缩</p><br>"
         for a, b in zip(name_list, img_list):
             put_text = put_text + f"<strong>{a}</strong><br /><img src=\"{b}\" /><br>\n\n"
         print(put_text)
 
-        put_telegraph(title=f"{keywords} 作品集", md_text=put_text)
+        put_url=put_telegraph(title=f"{keywords} 作品集", md_text=put_text)
+        await client.send_message(chat_id=message.chat.id, text=put_url)
 
 
 
