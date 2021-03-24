@@ -534,7 +534,7 @@ async def start_download_pixivtele(client, message):
                         name_list.append(file)
                         img_list.append(url)
                     else:
-                        file_dir=compress_image(outfile=file_dir,mb=10000)
+                        file_dir=compress_image(outfile=file_dir,mb=5000)
                         print(file_dir, file)
                         info = telegraph.upload.upload_file(file_dir)
                         url = "https://telegra.ph" + info[0]
