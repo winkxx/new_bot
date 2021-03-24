@@ -515,41 +515,41 @@ async def start_download_pixivtele(client, message):
         await client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
 
 
-    try:
-        img_list=[]
-        name_list = []
+    
+    img_list=[]
+    name_list = []
 
-        for root, dirs, files in os.walk(keywords):
-            for file in files:
-                try:
-                    file_dir = os.path.join(root, file)
+    for root, dirs, files in os.walk(keywords):
+        for file in files:
+            try:
+                file_dir = os.path.join(root, file)
+                print(file_dir, file)
+
+                if os.path.getsize(file_dir) < 1024*512* 10:
                     print(file_dir, file)
 
-                    if os.path.getsize(file_dir) < 1024*512* 10:
-                        print(file_dir, file)
+                    info = telegraph.upload.upload_file(file_dir)
+                    url = "https://telegra.ph" + info[0]
 
-                        info = telegraph.upload.upload_file(file_dir)
-                        url = "https://telegra.ph" + info[0]
+                    name_list.append(file)
+                    img_list.append(url)
+                else:
+                    file_dir=compress_image(outfile=file_dir,mb=5000)
+                    print(file_dir, file)
+                    info = telegraph.upload.upload_file(file_dir)
+                    url = "https://telegra.ph" + info[0]
 
-                        name_list.append(file)
-                        img_list.append(url)
-                    else:
-                        file_dir=compress_image(outfile=file_dir,mb=5000)
-                        print(file_dir, file)
-                        info = telegraph.upload.upload_file(file_dir)
-                        url = "https://telegra.ph" + info[0]
-
-                        name_list.append(file)
-                        img_list.append(url)
+                    name_list.append(file)
+                    img_list.append(url)
 
 
 
-                except Exception as e:
-                    print(f"标记4 {e}")
+            except Exception as e:
+                print(f"标记4 {e}")
 
-                    sys.stdout.flush()
-                    continue
-
+                sys.stdout.flush()
+                continue
+    try:
         put_text = "<p>Tips:5M以上的图片会被压缩</p><br>"
         for a, b in zip(name_list, img_list):
             put_text = put_text + f"<strong>{a}</strong><br /><img src=\"{b}\" /><br>\n\n"
@@ -561,12 +561,12 @@ async def start_download_pixivtele(client, message):
 
 
     except Exception as e:
-        print(f"{e}")
+        print(f"标记8 {e}")
         sys.stdout.flush()
-        await client.send_message(chat_id=message.chat.id, text="图片上传失败")
+        await client.send_message(chat_id=message.chat.id, text="发布失败")
+        del_path(keywords)
         return
 
-    await client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
     del_path(keywords)
     return
 
