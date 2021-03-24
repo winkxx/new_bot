@@ -6,7 +6,14 @@ import zipfile
 import time
 import re
 import subprocess
+import sys
+import io
+import os
+from PIL import Image
+from PIL import ImageFile
 from pyrogram.types import InputMediaPhoto
+import telegraph
+from telegraph import Telegraph
 
 session = requests.Session()
 header = {
@@ -14,6 +21,36 @@ header = {
     'Referer': 'https://accounts.pixiv.net/login?lang=zh&source=pc&view_type=page&ref=wwwtop_accounts_index',
 }
 
+def compress_image(outfile, mb, quality=85, k=0.9):
+    """不改变图片尺寸压缩到指定大小
+    :param outfile: 压缩文件保存地址
+    :param mb: 压缩目标，KB
+    :param step: 每次调整的压缩比率
+    :param quality: 初始压缩比率
+    :return: 压缩文件地址，压缩文件大小
+    """
+
+    o_size = os.path.getsize(outfile) // 1024
+    print(o_size, mb)
+    if o_size <= mb:
+        return outfile
+
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    while o_size > mb:
+        im = Image.open(outfile)
+        x, y = im.size
+        out = im.resize((int(x * k), int(y * k)), Image.ANTIALIAS)
+        try:
+            dir, suffix = os.path.splitext(outfile)
+            os.remove(outfile)
+            #print(outfile)
+            outfile = '{}{}'.format(dir, suffix)
+            out.save(outfile, quality=quality)
+        except Exception as e:
+            print(e)
+            break
+        o_size = os.path.getsize(outfile) // 1024
+    return outfile
 
 def run_upload_rclone(client,dir,title,info,file_num):
     Rclone_remote=os.environ.get('Remote')
@@ -380,18 +417,25 @@ async def start_download_pixivphoto(client, message):
         img_list=[]
         for root, dirs, files in os.walk(keywords):
             for file in files:
-                file_dir = os.path.join(root, file)
-                print(file_dir, file)
+                try:
+                    file_dir = os.path.join(root, file)
+                    print(file_dir, file)
 
-                if os.path.getsize(file_dir) < 1024*1024* 10:
-                    img_list.append(InputMediaPhoto(media=file_dir, caption=file))
+                    if os.path.getsize(file_dir) < 1024*1024* 10:
+                        img_list.append(InputMediaPhoto(media=file_dir, caption=file))
+                    else:
+                        file_dir=compress_image(outfile=file_dir,mb=10000)
+                        img_list.append(InputMediaPhoto(media=file_dir, caption=file))
 
-                if len(img_list)==10:
-                    await client.send_chat_action(chat_id=message.chat.id,action="upload_photo")
-                    print("开始上传")
+                    if len(img_list)==10:
+                        await client.send_chat_action(chat_id=message.chat.id,action="upload_photo")
+                        print("开始上传")
+                        sys.stdout.flush()
+                        await client.send_media_group(chat_id=message.chat.id,media=img_list)
+                        img_list = []
+                except Exception as e:
+                    print(f"标记3 {e}")
                     sys.stdout.flush()
-                    await client.send_media_group(chat_id=message.chat.id,media=img_list)
-                    img_list = []
 
         if len(img_list) != 0:
             await client.send_chat_action(chat_id=message.chat.id, action="upload_photo")
@@ -410,9 +454,117 @@ async def start_download_pixivphoto(client, message):
     del_path(keywords)
     return
 
+def put_telegraph(title,md_text):
+  tele = Telegraph()
+
+  tele.create_account(short_name='Bot')
+  response = tele.create_page(
+      title=title,
+      html_content=md_text
+  )
+
+  text_url='https://telegra.ph/{}'.format(response['path'])
+  return text_url
+
+
+async def start_download_pixivtele(client, message):
+
+    keywords = message.text.split()[1]
+    print(keywords)
+    artistid = keywords
+    idurl = f"https://www.pixiv.net/ajax/user/{artistid}/profile/all"
+    print(idurl)
+    header = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 5.8; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.86 Safari/537.36",
+    }
+    html2 = requests.get(url=idurl, headers=header)
+    print(html2)
+
+    illusts = html2.json()['body']['illusts']
+    info = await client.send_message(chat_id=message.chat.id, text="开始下载")
+    img_num = len(illusts)
+    img_su_num = 0
+    img_er_num = 0
+    for id in illusts:
+        print(id)
+        info_url = f"https://www.pixiv.net/touch/ajax/illust/details?illust_id={id}"
+        ht = requests.get(url=info_url, headers=header)
+        info_json = ht.json()
+        img_url = info_json['body']['illust_details']['url_big']
+        title = info_json['body']['illust_details']['meta']['title'] + f"id-{id}"
+
+        # .author_details.profile_img.main
+        author = f"{info_json['body']['author_details']['user_name']}"
+
+        title = str(title).replace("#", "").replace(author, "").replace(":", "").replace("@", "").replace("/", "")
+        author = str(author).replace(":", "").replace("@", "").replace("/", "")
+        print(img_url)
+
+        download_result = download(url=img_url, title=title, author=keywords, id=id)
+        if download_result == True:
+            img_su_num = img_su_num + 1
+        else:
+            img_er_num = img_er_num + 1
+
+        text = f"Author:{author}\n" \
+               f"Number of pictures:{img_num}\n" \
+               f"Number of successes:{img_su_num}\n" \
+               f"Number of errors:{img_er_num}\n" \
+               f"Progessbar:\n{progessbar(img_su_num, img_num)}"
+
+        await client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
+
+
+    try:
+        img_list=[]
+        name_list = []
+
+        for root, dirs, files in os.walk(keywords):
+            for file in files:
+                try:
+                    file_dir = os.path.join(root, file)
+                    print(file_dir, file)
+
+                    if os.path.getsize(file_dir) < 1024*512* 10:
+                        print(file_dir, file)
+
+                        info = telegraph.upload.upload_file(file_dir)
+                        url = "https://telegra.ph" + info[0]
+
+                        name_list.append(file)
+                        img_list.append(url)
+                    else:
+                        file_dir=compress_image(outfile=file_dir,mb=10000)
+                        print(file_dir, file)
+                        info = telegraph.upload.upload_file(file_dir)
+                        url = "https://telegra.ph" + info[0]
+
+                        name_list.append(file)
+                        img_list.append(url)
 
 
 
+                except Exception as e:
+                    print(f"标记4 {e}")
+                    sys.stdout.flush()
 
+        put_text = "<p>Tips:5M以上的图片会被压缩</p><br>"
+        for a, b in zip(name_list, img_list):
+            put_text = put_text + f"<strong>{a}</strong><br /><img src=\"{b}\" /><br>\n\n"
+        print(put_text)
+
+        put_telegraph(title=f"{keywords} 作品集", md_text=put_text)
+
+
+
+    except Exception as e:
+        print(f"{e}")
+        sys.stdout.flush()
+        await client.send_message(chat_id=message.chat.id, text="图片上传失败")
+        return
+
+    await client.delete_messages(chat_id=message.chat.id, message_ids=message.message_id)
+    del_path(keywords)
+    return
 
 

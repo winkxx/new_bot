@@ -5,7 +5,7 @@ from modules.check import new_clock, second_clock
 from config import client, Telegram_user_id
 from pyrogram.handlers import MessageHandler,CallbackQueryHandler
 from pyrogram import filters
-from modules.pixiv import start_download_pixiv,start_download_id,start_download_pixivtg,start_download_pixivphoto
+from modules.pixiv import start_download_pixiv,start_download_id,start_download_pixivtg,start_download_pixivphoto,start_download_pixivtele
 from modules.control import send_telegram_file,start_http_download,start_download,start_http_downloadtg
 from modules.call import all_callback
 from modules.moretg import get_telegram_file,get_file_id,sendfile_by_id
@@ -134,6 +134,11 @@ def start_bot():
         filters=filters.command("pixivuserphoto") & filters.user(int(Telegram_user_id))
     )
 
+    start_download_pixivtele_message_handler = MessageHandler(
+        start_download_pixivtele,
+        filters=filters.command("pixivusertele") & filters.user(int(Telegram_user_id))
+    )
+
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)
@@ -152,6 +157,7 @@ def start_bot():
     client.add_handler(get_file_id_message_handler, group=1)
     client.add_handler(sendfile_by_id_message_handler, group=1)
     client.add_handler(start_download_pixivphoto_message_handler, group=1)
+    client.add_handler(start_download_pixivtele_message_handler, group=1)
     client.run()
 
 if __name__ == '__main__':
