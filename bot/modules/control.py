@@ -17,7 +17,7 @@ os.system("df -lh")
 task=[]
 
 def check_upload(api, gid):
-    time.sleep(2)
+    time.sleep(5)
     currdownload=api.get_download(gid)
     dir=currdownload.dir
     key=1
