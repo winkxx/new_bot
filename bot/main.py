@@ -2,11 +2,11 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 import sys
 from modules.check import new_clock, second_clock
-from config import client, Telegram_user_id
+from config import client, Telegram_user_id,aria2
 from pyrogram.handlers import MessageHandler,CallbackQueryHandler
 from pyrogram import filters
 from modules.pixiv import start_download_pixiv,start_download_id,start_download_pixivtg,start_download_pixivphoto,start_download_pixivtele
-from modules.control import send_telegram_file,start_http_download,start_download,start_http_downloadtg
+from modules.control import send_telegram_file,start_http_download,start_download,start_http_downloadtg,check_upload
 from modules.call import all_callback
 from modules.moretg import get_telegram_file,get_file_id,sendfile_by_id
 from modules.picacg import seach_main
@@ -44,7 +44,7 @@ def start_bot():
     print("开始bot")
     print(Telegram_user_id)
     sys.stdout.flush()
-
+    aria2.listen_to_notifications(on_download_complete=check_upload, threaded=True)
 
     start_message_handler = MessageHandler(
         test,

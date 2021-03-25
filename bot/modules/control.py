@@ -14,6 +14,45 @@ import nest_asyncio
 
 nest_asyncio.apply()
 os.system("df -lh")
+task=[]
+
+def check_upload(api, gid):
+    time.sleep(2)
+    currdownload=api.get_download(gid)
+    dir=currdownload.dir
+    key=1
+    if len(task)!=0:
+        for a in task:
+            if a == dir:
+                key=0
+                print("该任务存在，不需要上传")
+                sys.stdout.flush()
+                task.remove(a)
+    if key==1:
+        Rclone_remote = os.environ.get('Remote')
+        Upload = os.environ.get('Upload')
+        file_dir = f"{currdownload.dir}/{currdownload.name}"
+        file_num = int(len(currdownload.files))
+        print(f"上传该任务:{file_dir}")
+        sys.stdout.flush()
+        name=currdownload.name
+
+        if int(file_num) == 1:
+            shell = f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}\"  -v --stats-one-line --stats=1s  "
+        else:
+            shell = f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}/{name}\"  -v --stats-one-line --stats=1s  "
+        print(shell)
+        cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
+                               stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1)
+
+        while True:
+            time.sleep(2)
+            if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
+                print("上传结束")
+                return
+
+
+
 
 def the_download(client, message,url):
 
@@ -188,7 +227,7 @@ def the_download(client, message,url):
                 time.sleep(2)
         time.sleep(2)
 
-        time.sleep(1)
+
 
     if currdownload.is_complete:
         print(currdownload.name)
@@ -227,7 +266,8 @@ def start_download(client, message):
 
 
 def run_rclone(dir,title,info,file_num,client, message):
-
+    global task
+    task.append(dir)
     Rclone_remote=os.environ.get('Remote')
     Upload=os.environ.get('Upload')
 
@@ -535,7 +575,6 @@ def http_download(client, message,url):
                 time.sleep(2)
         time.sleep(2)
 
-        time.sleep(1)
     if currdownload.is_complete:
         print(currdownload.name)
         try:
