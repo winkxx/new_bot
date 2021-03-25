@@ -17,8 +17,8 @@ os.system("df -lh")
 task=[]
 
 def check_upload(api, gid):
-   
-    time.sleep(5)
+
+    time.sleep(15)
     global task
     print(f"检查上传 {task}")
     sys.stdout.flush()
