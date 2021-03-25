@@ -17,7 +17,11 @@ os.system("df -lh")
 task=[]
 
 def check_upload(api, gid):
+   
     time.sleep(5)
+    global task
+    print(f"检查上传 {task}")
+    sys.stdout.flush()
     currdownload=api.get_download(gid)
     dir=currdownload.dir
     key=1
@@ -268,6 +272,8 @@ def start_download(client, message):
 def run_rclone(dir,title,info,file_num,client, message):
     global task
     task.append(dir)
+    print(task)
+    sys.stdout.flush()
     Rclone_remote=os.environ.get('Remote')
     Upload=os.environ.get('Upload')
 
