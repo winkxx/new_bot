@@ -22,7 +22,12 @@ def check_upload(api, gid):
     global task
     print(f"检查上传 {task}")
     sys.stdout.flush()
-    currdownload=api.get_download(gid)
+    try:
+        currdownload=api.get_download(gid)
+    except:
+        print("任务已删除，不需要上传")
+        sys.stdout.flush()
+        return
     dir=currdownload.dir
     key=1
     if len(task)!=0:
@@ -321,6 +326,7 @@ def run_rclone(dir,title,info,file_num,client, message):
             print("上传结束")
             client.send_message(text=f"{title}\n上传结束",chat_id=info.chat.id)
             os.remove(f"{name}.log")
+            task.remove(dir)
             return
 
     return
