@@ -3,6 +3,8 @@ import threading
 import youtube_dl
 from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
 import sys
+import requests
+import os
 
 def get_video_info(client, message, url):
     try:
@@ -21,7 +23,7 @@ def get_video_info(client, message, url):
         video_uploader=result['uploader']
         text=f"视频名称：{video_name}\n" \
              f"作者:{video_uploader}\n" \
-             f"简介：{video_description[0:800]}\n"
+             f"简介：{video_description}\n"
         print(text)
         print(video_img)
         sys.stdout.flush()
@@ -45,10 +47,15 @@ def get_video_info(client, message, url):
             )
         ]
     ]
-
+    img = requests.get(url=video_img)
+    img_name=f"{message.chat.id}{message.message_id}"
+    with open(img_name, 'wb') as f:
+        f.write(img.content)
+        f.close()
     new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
-    client.send_photo(caption=text, photo=video_img,chat_id=message.chat.id,
+    client.send_photo(caption=text[0:1024], photo=img_name,chat_id=message.chat.id,
                              parse_mode='markdown', reply_markup=new_reply_markup)
+    os.remove(img_name)
 
 
 
@@ -59,4 +66,3 @@ def start_get_video_info(client, message):
 
     t1 = threading.Thread(target=get_video_info, args=(client, message, keywords))
     t1.start()
-    
