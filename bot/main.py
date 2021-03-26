@@ -11,6 +11,7 @@ from modules.call import all_callback
 from modules.moretg import get_telegram_file,get_file_id,sendfile_by_id
 from modules.picacg import seach_main
 from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start_rclonecopyurl
+from modules.video import start_get_video_info
 
 async def chexk_group(_, client, query):
     print(query)
@@ -139,6 +140,11 @@ def start_bot():
         filters=filters.command("pixivusertele") & filters.user(int(Telegram_user_id))
     )
 
+    start_get_video_info_message_handler = MessageHandler(
+        start_get_video_info,
+        filters=filters.command("video") & filters.user(int(Telegram_user_id))
+    )
+
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)
@@ -158,6 +164,7 @@ def start_bot():
     client.add_handler(sendfile_by_id_message_handler, group=1)
     client.add_handler(start_download_pixivphoto_message_handler, group=1)
     client.add_handler(start_download_pixivtele_message_handler, group=1)
+    client.add_handler(start_get_video_info_message_handler, group=1)
     client.run()
 
 if __name__ == '__main__':
