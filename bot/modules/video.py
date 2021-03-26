@@ -45,7 +45,8 @@ class Download_video():
         if d['status'] == 'finished':
             filename = d['filename']
             print(f"标记 8 {filename}")
-            self.file=filename
+            if ".mp4" in filename:
+                self.file=filename
             try:
                 self.client.edit_message_text(text=f"{filename}\n下载完成，开始上传", chat_id=self.info.chat.id, message_id=self.info.message_id,
                                           parse_mode='markdown')
@@ -91,7 +92,7 @@ class Download_video():
             sys.stdout.flush()
         else:
             print(f"{self.file}发送到TG")
-            
+
             sys.stdout.flush()
             os.system("ls")
             self.client.send_video(chat_id=self.call.message.chat.id,video=self.file,caption=caption ,progress=progress,
