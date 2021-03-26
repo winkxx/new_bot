@@ -36,7 +36,7 @@ def get_video_info(client, message, url):
     ]
 
     new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
-    client.send_photo(caption=text, photo=video_img,chat_id=message.chat.id, message_id=message.message_id,
+    client.send_photo(caption=text, photo=video_img,chat_id=message.chat.id,
                              parse_mode='markdown', reply_markup=new_reply_markup)
 
 
