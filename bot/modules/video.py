@@ -49,7 +49,7 @@ class Download_video():
         self.client=client
         self.call=call
         self.file=""
-        
+
     def download_video(self):
         try:
             import re
@@ -60,6 +60,8 @@ class Download_video():
             caption = str(self.call.message.caption)
 
             web_url = re.findall("web_url:(.*?)\n", caption, re.S)[0]
+            print(web_url)
+            sys.stdout.flush()
             ydl_opts = {
                 'format': 'bestvideo[width>=1080]+bestaudio/best',
                 'quiet': True,
