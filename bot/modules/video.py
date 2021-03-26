@@ -6,6 +6,8 @@ import sys
 
 def get_video_info(client, message, url):
     try:
+        print(url)
+        sys.stdout.flush()
         ydl = youtube_dl.YoutubeDL({'outtmpl': '%(id)s.%(ext)s'})
         result = ydl.extract_info(
             url=url,
@@ -25,6 +27,7 @@ def get_video_info(client, message, url):
         sys.stdout.flush()
     except Exception as e:
         client.send_message(chat_id=message.chat.id, text=f"无法获取视频信息:\n{e}", parse_mode='markdown')
+        return
 
     new_inline_keyboard = [
         [
@@ -56,3 +59,4 @@ def start_get_video_info(client, message):
 
     t1 = threading.Thread(target=get_video_info, args=(client, message, keywords))
     t1.start()
+    
