@@ -21,8 +21,10 @@ def progress(current, total,client,message,name):
         print("e")
 
 
-def download_video(client, call):
-    def download_video_status(d):
+class Download_video():
+
+
+    def download_video_status(self,d):
         global temp_time
 
         time_end = time.time()
@@ -33,46 +35,54 @@ def download_video(client, call):
             if d['status'] == 'downloading':
                 # print(d)
                 text="下载中 " + d['_percent_str'] + " " + d['_speed_str']
-                client.edit_message_text(text=text, chat_id=info.chat.id, message_id=info.message_id,
+                self.client.edit_message_text(text=text, chat_id=self.info.chat.id, message_id=self.info.message_id,
                                          parse_mode='markdown')
 
             if d['status'] == 'finished':
                 filename = d['filename']
                 print(filename)
-                file=filename
-                client.send_message(chat_id=info.chat.id, text=f"{filename}\n下载完成，开始上传", parse_mode='markdown')
-    try:
-        import re
-        print("开始下载视频")
-        sys.stdout.flush()
-        message_chat_id = call.message.chat.id
-        info = client.send_message(chat_id=message_chat_id, text="开始下载", parse_mode='markdown')
-        caption = str(call.message.caption)
-        file=""
-        web_url = re.findall("web_url:(.*?)\n", caption, re.S)[0]
-        ydl_opts = {
-            'format': 'bestvideo[width>=1080]+bestaudio/best',
-            'quiet': True,
-            'no_warnings': True,
-            'progress_hooks': [download_video_status]
-        }
+                self.file=filename
+                self.client.send_message(chat_id=self.info.chat.id, text=f"{filename}\n下载完成，开始上传", parse_mode='markdown')
 
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([web_url])
+    def __init__(self,client, call):
+        #调用父类的构函
+        self.client=client
+        self.call=call
+        self.file=""
+        
+    def download_video(self):
+        try:
+            import re
+            print("开始下载视频")
+            sys.stdout.flush()
+            message_chat_id = self.call.message.chat.id
+            self.info = self.client.send_message(chat_id=message_chat_id, text="开始下载", parse_mode='markdown')
+            caption = str(self.call.message.caption)
 
-    except Exception as e:
-        print(f"下载视频失败 :{e}")
-        sys.stdout.flush()
-        return
+            web_url = re.findall("web_url:(.*?)\n", caption, re.S)[0]
+            ydl_opts = {
+                'format': 'bestvideo[width>=1080]+bestaudio/best',
+                'quiet': True,
+                'no_warnings': True,
+                'progress_hooks': [self.download_video_status]
+            }
 
-    if call.data =="videorclone":
-        print(f"{file}上传到网盘")
-        sys.stdout.flush()
-    else:
-        print(f"{file}发送到TG")
-        sys.stdout.flush()
-        client.send_video(chat_id=call.message.chat.id,video=file,caption=caption ,progress=progress,
-                                       progress_args=(client, info, file,))
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([web_url])
+
+        except Exception as e:
+            print(f"下载视频失败 :{e}")
+            sys.stdout.flush()
+            return
+
+        if self.call.data =="videorclone":
+            print(f"{self.file}上传到网盘")
+            sys.stdout.flush()
+        else:
+            print(f"{self.file}发送到TG")
+            sys.stdout.flush()
+            self.client.send_video(chat_id=self.call.message.chat.id,video=self.file,caption=caption ,progress=progress,
+                                           progress_args=(self.client, self.info, self.file,))
 
 
 
