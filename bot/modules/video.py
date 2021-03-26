@@ -14,7 +14,7 @@ temp_time= time.time()
 
 
 
-def download_video(client, message):
+def download_video(client, call):
     def download_video_status(d):
         global temp_time
 
@@ -26,17 +26,20 @@ def download_video(client, message):
             if d['status'] == 'downloading':
                 # print(d)
                 text="下载中 " + d['_percent_str'] + " " + d['_speed_str']
-                client.send_message(chat_id=message.chat.id, text=text, parse_mode='markdown')
+                client.edit_message_text(text=text, chat_id=info.chat.id, message_id=info.message_id,
+                                         parse_mode='markdown')
                 return
             if d['status'] == 'finished':
                 filename = d['filename']
                 print(filename)
-                client.send_message(chat_id=message.chat.id, text=filename, parse_mode='markdown')
+                client.send_message(chat_id=info.chat.id, text=filename, parse_mode='markdown')
 
     import re
     
-    caption = str(message.message.caption)
-    
+    message_chat_id = call.message.chat.id
+    info = client.send_message(chat_id=message_chat_id, text="开始下载", parse_mode='markdown')
+    caption = str(call.message.caption)
+
     web_url = re.findall("web_url:(.*?)\n", caption, re.S)[0]
     ydl_opts = {
         'format': 'bestvideo[width>=1080]+bestaudio/best',
@@ -47,9 +50,9 @@ def download_video(client, message):
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([web_url])
-        return 
+        return
 
-    
+
 
 
 def get_video_info(client, message, url):
