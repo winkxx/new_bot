@@ -27,22 +27,23 @@ class Download_video():
     def download_video_status(self,d):
         global temp_time
 
-        time_end = time.time()
-        if time_end - temp_time < 2:
-            return
-        else:
-            temp_time = time.time()
-            if d['status'] == 'downloading':
+
+        if d['status'] == 'downloading':
+            time_end = time.time()
+            if time_end - temp_time < 2:
+                None
+            else:
+                temp_time = time.time()
                 # print(d)
                 text="下载中 " + d['_percent_str'] + " " + d['_speed_str']
                 self.client.edit_message_text(text=text, chat_id=self.info.chat.id, message_id=self.info.message_id,
                                          parse_mode='markdown')
 
-            if d['status'] == 'finished':
-                filename = d['filename']
-                print(filename)
-                self.file=filename
-                self.client.send_message(chat_id=self.info.chat.id, text=f"{filename}\n下载完成，开始上传", parse_mode='markdown')
+        if d['status'] == 'finished':
+            filename = d['filename']
+            print(filename)
+            self.file=filename
+            self.client.send_message(chat_id=self.info.chat.id, text=f"{filename}\n下载完成，开始上传", parse_mode='markdown')
 
     def __init__(self,client, call):
         #调用父类的构函
