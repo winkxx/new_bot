@@ -36,14 +36,21 @@ class Download_video():
                 temp_time = time.time()
                 # print(d)
                 text="下载中 " + d['_percent_str'] + " " + d['_speed_str']
-                self.client.edit_message_text(text=text, chat_id=self.info.chat.id, message_id=self.info.message_id,
+                try:
+                    self.client.edit_message_text(text=text, chat_id=self.info.chat.id, message_id=self.info.message_id,
                                          parse_mode='markdown')
+                except:
+                    None
 
         if d['status'] == 'finished':
             filename = d['filename']
             print(filename)
             self.file=filename
-            self.client.send_message(chat_id=self.info.chat.id, text=f"{filename}\n下载完成，开始上传", parse_mode='markdown')
+            try:
+                self.client.edit_message_text(text=f"{filename}\n下载完成，开始上传", chat_id=self.info.chat.id, message_id=self.info.message_id,
+                                          parse_mode='markdown')
+            except:
+                None
 
     def __init__(self,client, call):
         #调用父类的构函
@@ -64,7 +71,7 @@ class Download_video():
             print(web_url)
             sys.stdout.flush()
             ydl_opts = {
-                'format': 'bestvideo[width>=1080]+bestaudio/best',
+                'format': 'bestvideo',
                 'quiet': True,
                 'no_warnings': True,
                 'progress_hooks': [self.download_video_status]
