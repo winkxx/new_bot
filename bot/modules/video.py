@@ -48,7 +48,7 @@ def get_video_info(client, message, url):
         ]
     ]
     img = requests.get(url=video_img)
-    img_name=f"{message.chat.id}{message.message_id}temp"
+    img_name=f"{message.chat.id}{message.message_id}.png"
     with open(img_name, 'wb') as f:
         f.write(img.content)
         f.close()
