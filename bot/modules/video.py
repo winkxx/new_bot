@@ -71,7 +71,7 @@ class Download_video():
             print(web_url)
             sys.stdout.flush()
             ydl_opts = {
-                'format': 'bestvideo',
+                'format': "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4",
                 'quiet': True,
                 'no_warnings': True,
                 'progress_hooks': [self.download_video_status]

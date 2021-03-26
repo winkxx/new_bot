@@ -15,6 +15,10 @@ RUN python3 get-pip.py
 RUN apt install tzdata -y
 RUN apt-get install aria2 -y
 
+RUN wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
+RUN tar xvf ffmpeg-git-*-static.tar.xz && rm -rf ffmpeg-git-*-static.tar.xz
+RUN mv ffmpeg-git-*/ffmpeg  ffmpeg-git-*/ffprobe /usr/bin/
+
 RUN mkdir /root/.aria2
 COPY config /root/.aria2/
 
