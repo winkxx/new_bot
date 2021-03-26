@@ -91,8 +91,9 @@ class Download_video():
             sys.stdout.flush()
         else:
             print(f"{self.file}发送到TG")
-            os.system("ls")
+            
             sys.stdout.flush()
+            os.system("ls")
             self.client.send_video(chat_id=self.call.message.chat.id,video=self.file,caption=caption ,progress=progress,
                                            progress_args=(self.client, self.info, self.file,))
 
