@@ -52,32 +52,30 @@ def file_pause(gid):
         print (e)
         return f"\n暂停失败：{e}"
 
-def all_callback(client, message):
-    try:
-        print(message)
-        sys.stdout.flush()
-        if "Remove" in message.data:
-            the_gid=str(message.data).replace("Remove ","")
-            info_text = file_del(gid=the_gid)
-            client.answer_callback_query(callback_query_id=message.id,text=info_text,cache_time=3)
-        elif "Resume" in message.data:
-            the_gid=str(message.data).replace("Resume ","")
-            info_text = file_resume(gid=the_gid)
-            client.answer_callback_query(callback_query_id=message.id,text=info_text,cache_time=3)
-        elif "Pause" in message.data:
-            the_gid=str(message.data).replace("Pause ","")
-            info_text = file_pause(gid=the_gid)
-            client.answer_callback_query(callback_query_id=message.id,text=info_text,cache_time=3)
-        elif "down" == message.data:
+def start_remove(client, message):
+    the_gid = str(message.data).replace("Remove ", "")
+    info_text = file_del(gid=the_gid)
+    client.answer_callback_query(callback_query_id=message.id, text=info_text, cache_time=3)
 
+def start_Resume(client, message):
+    the_gid = str(message.data).replace("Resume ", "")
+    info_text = file_resume(gid=the_gid)
+    client.answer_callback_query(callback_query_id=message.id, text=info_text, cache_time=3)
 
-            client.answer_callback_query(callback_query_id=message.id,text="开始下载",cache_time=3)
+def start_pause(client, message):
+    the_gid = str(message.data).replace("Pause ", "")
+    info_text = file_pause(gid=the_gid)
+    client.answer_callback_query(callback_query_id=message.id, text=info_text, cache_time=3)
 
-            add_download(client=client,call=message)
-        elif "tgdown" == message.data:
+def start_benzi_down(client, message):
+    if "down" == message.data:
 
-            client.answer_callback_query(callback_query_id=message.id, text="开始下载", cache_time=3)
+        client.answer_callback_query(callback_query_id=message.id, text="开始下载", cache_time=3)
 
-            add_downloadtg(client=client, call=message)
-    except Exception as e:
-        print(f"all_callback :{e}")
+        add_download(client=client, call=message)
+
+    elif "tgdown" == message.data:
+
+        client.answer_callback_query(callback_query_id=message.id, text="开始下载", cache_time=3)
+
+        add_downloadtg(client=client, call=message)

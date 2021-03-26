@@ -7,7 +7,7 @@ from pyrogram.handlers import MessageHandler,CallbackQueryHandler
 from pyrogram import filters
 from modules.pixiv import start_download_pixiv,start_download_id,start_download_pixivtg,start_download_pixivphoto,start_download_pixivtele
 from modules.control import send_telegram_file,start_http_download,start_download,start_http_downloadtg,check_upload
-from modules.call import all_callback
+from modules.call import start_pause,start_remove,start_Resume,start_benzi_down
 from modules.moretg import get_telegram_file,get_file_id,sendfile_by_id
 from modules.picacg import seach_main
 from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start_rclonecopyurl
@@ -47,6 +47,8 @@ def start_bot():
     sys.stdout.flush()
     aria2.listen_to_notifications(on_download_complete=check_upload, threaded=True)
 
+
+
     start_message_handler = MessageHandler(
         test,
         #filters=filters.command("start") & filters.user(int(Telegram_user_id))
@@ -69,10 +71,7 @@ def start_bot():
         filters=filters.command("magfile") & filters.user(int(Telegram_user_id))
     )
 
-    all_callback_handler = CallbackQueryHandler(
-        callback=all_callback,
 
-        )
 
     http_download_message_handler = MessageHandler(
         start_http_download,
@@ -145,11 +144,35 @@ def start_bot():
         filters=filters.command("video") & filters.user(int(Telegram_user_id))
     )
 
+    start_Resume_handler = CallbackQueryHandler(
+        callback=start_Resume,
+        filters=filters.create(lambda _, __, query: "Resume" in query.data )
+        )
+
+    start_pause_handler = CallbackQueryHandler(
+        callback=start_pause,
+        filters=filters.create(lambda _, __, query: "Pause" in query.data )
+        )
+    start_remove_handler = CallbackQueryHandler(
+        callback=start_remove,
+        filters=filters.create(lambda _, __, query: "Remove" in query.data )
+        )
+
+    start_benzi_down_handler = CallbackQueryHandler(
+        callback=start_benzi_down,
+        filters=filters.create(lambda _, __, query: "down" in query.data )
+        )
+
+    client.add_handler(start_Resume_handler, group=0)
+    client.add_handler(start_pause_handler, group=0)
+    client.add_handler(start_remove_handler, group=0)
+    client.add_handler(start_benzi_down_handler, group=0)
+
     client.add_handler(start_message_handler,group=1)
     client.add_handler(pixivuser_message_handler,group=1)
     client.add_handler(pixivid_message_handler,group=1)
     client.add_handler(magfile_message_handler,group=3)
-    client.add_handler(all_callback_handler,group=0)
+
     client.add_handler(http_download_message_handler,group=1)
     client.add_handler(magnet_download_message_handler, group=1)
     client.add_handler(telegram_file_message_handler, group=1)
