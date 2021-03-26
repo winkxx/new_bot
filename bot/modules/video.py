@@ -19,7 +19,7 @@ def get_video_info(client, message, url):
         video_uploader=result['uploader']
         text=f"视频名称：{video_name}\n" \
              f"作者:{video_uploader}\n" \
-             f"简介：{video_description}\n"
+             f"简介：{video_description[0:800]}\n"
         print(text)
         print(video_img)
         sys.stdout.flush()
