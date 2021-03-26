@@ -71,7 +71,7 @@ class Download_video():
             print(web_url)
             sys.stdout.flush()
             ydl_opts = {
-                'format': "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4",
+                'format': "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio",
                 'quiet': True,
                 'no_warnings': True,
                 'progress_hooks': [self.download_video_status]
@@ -87,9 +87,11 @@ class Download_video():
 
         if self.call.data =="videorclone":
             print(f"{self.file}上传到网盘")
+            
             sys.stdout.flush()
         else:
             print(f"{self.file}发送到TG")
+            os.system("ls")
             sys.stdout.flush()
             self.client.send_video(chat_id=self.call.message.chat.id,video=self.file,caption=caption ,progress=progress,
                                            progress_args=(self.client, self.info, self.file,))
