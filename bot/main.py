@@ -7,7 +7,7 @@ from pyrogram.handlers import MessageHandler,CallbackQueryHandler
 from pyrogram import filters
 from modules.pixiv import start_download_pixiv,start_download_id,start_download_pixivtg,start_download_pixivphoto,start_download_pixivtele
 from modules.control import send_telegram_file,start_http_download,start_download,start_http_downloadtg,check_upload
-from modules.call import start_pause,start_remove,start_Resume,start_benzi_down
+from modules.call import start_pause,start_remove,start_Resume,start_benzi_down,start_download_video
 from modules.moretg import get_telegram_file,get_file_id,sendfile_by_id
 from modules.picacg import seach_main
 from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start_rclonecopyurl
@@ -162,7 +162,12 @@ def start_bot():
         callback=start_benzi_down,
         filters=filters.create(lambda _, __, query: "down" in query.data )
         )
+    start_download_video_handler = CallbackQueryHandler(
+        callback=start_download_video,
+        filters=filters.create(lambda _, __, query: "video" in query.data )
+        )
 
+    client.add_handler(start_download_video_handler, group=0)
     client.add_handler(start_Resume_handler, group=0)
     client.add_handler(start_pause_handler, group=0)
     client.add_handler(start_remove_handler, group=0)

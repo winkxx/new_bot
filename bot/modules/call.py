@@ -1,6 +1,7 @@
 
 from config import aria2
 from modules.picacg import add_download,add_downloadtg
+from modules.video import download_video
 import sys
 
 
@@ -79,3 +80,7 @@ def start_benzi_down(client, message):
         client.answer_callback_query(callback_query_id=message.id, text="开始下载", cache_time=3)
 
         add_downloadtg(client=client, call=message)
+        
+        
+def start_download_video(client, message):
+    download_video(client, message)
