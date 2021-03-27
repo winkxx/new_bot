@@ -11,6 +11,7 @@ import requests
 import threading
 import subprocess
 import sys
+from modules.control import run_rclone
 from config import App_title
 from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
 
@@ -23,58 +24,7 @@ def wake_clock():
     except Exception as e:
         print(f"wake_clock error :{e}")
 
-def run_rclone(dir,title,info,file_num,client, message):
 
-    Rclone_remote=os.environ.get('Remote')
-    Upload=os.environ.get('Upload')
-
-    name=f"{str(info.message_id)}_{str(info.chat.id)}"
-    if int(file_num)==1:
-        shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
-    else:
-        shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}/{title}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
-    print(shell)
-    cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
-                           stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1)
-    # 实时输出
-    temp_text=None
-    while True:
-        time.sleep(1)
-        fname = f'{name}.log'
-        with open(fname, 'r') as f:  #打开文件
-            try:
-                lines = f.readlines() #读取所有行
-
-                for a in range(-1,-10,-1):
-                    last_line = lines[a] #取最后一行
-                    if last_line !="\n":
-                        break
-
-                print (f"上传中\n{last_line}")
-                if temp_text != last_line and "ETA" in last_line:
-                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA.*?(\d.*?)",last_line , re.S)[0]
-                    text=f"{title}\n" \
-                         f"更新时间：`{log_time}`\n" \
-                         f"上传部分：`{file_part}`\n" \
-                         f"上传进度：`{upload_Progress}`\n" \
-                         f"上传速度：`{upload_speed}`\n" \
-                         f"剩余时间:`{part_time}`"
-                    client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
-                    temp_text = last_line
-                f.close()
-
-            except Exception as e:
-                print(e)
-                f.close()
-                continue
-
-        if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
-            print("上传结束")
-            client.send_message(text=f"{title}\n上传结束",chat_id=info.chat.id)
-            os.remove(f"{name}.log")
-            return
-
-    return
 
 # hmacsha256加密函数
 def hmacsha256(key, string):
