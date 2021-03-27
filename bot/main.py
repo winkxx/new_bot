@@ -14,7 +14,7 @@ from modules.rclone import start_rclonecopy,start_rclonelsd,start_rclonels,start
 from modules.video import start_get_video_info
 
 async def chexk_group(_, client, query):
-    print(query)
+    #print(query)
     try:
         info=await client.get_chat_member(chat_id=int(Telegram_user_id),user_id=query.from_user.id)
         print(info)
@@ -96,7 +96,7 @@ def start_bot():
     start_message_handler = MessageHandler(
         help,
         #filters=filters.command("start") & filters.user(int(Telegram_user_id))
-        filters=filters.command("help")
+        filters=filters.command(["start","help"])
     )
 
     pixivuser_message_handler = MessageHandler(
