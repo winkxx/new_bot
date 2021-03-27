@@ -14,6 +14,7 @@ from PIL import ImageFile
 from pyrogram.types import InputMediaPhoto
 import telegraph
 from telegraph import Telegraph
+from modules.control import run_rclone
 
 session = requests.Session()
 header = {
@@ -52,62 +53,7 @@ def compress_image(outfile, mb, quality=85, k=0.9):
         o_size = os.path.getsize(outfile) // 1024
     return outfile
 
-def run_upload_rclone(client,dir,title,info,file_num):
-    Rclone_remote=os.environ.get('Remote')
-    Upload=os.environ.get('Upload')
 
-    name=f"{str(info.message_id)}_{str(info.chat.id)}"
-    if int(file_num)==1:
-        shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
-    else:
-        shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}/{title}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
-    print(shell)
-    cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
-                           stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1)
-    # 实时输出
-    time.sleep(2)
-    temp_text=None
-    while True:
-        time.sleep(1)
-        fname = f'{name}.log'
-        if not os.path.isfile(fname):
-            continue
-        with open(fname, 'r') as f:  #打开文件
-            try:
-                lines = f.readlines() #读取所有行
-
-                for a in range(-1,-10,-1):
-                    last_line = lines[a] #取最后一行
-                    if last_line !="\n":
-                        break
-
-                print (f"上传中\n{last_line}")
-                sys.stdout.flush()
-                if temp_text != last_line and "ETA" in last_line:
-                    print(last_line)
-                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA.*?(\d.*?)",last_line , re.S)[0]
-                    text=f"{title}\n" \
-                         f"更新时间：`{log_time}`\n" \
-                         f"上传部分：`{file_part}`\n" \
-                         f"上传进度：`{upload_Progress}`\n" \
-                         f"上传速度：`{upload_speed}`\n" \
-                         f"剩余时间:`{part_time}`"
-                    client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
-                    temp_text = last_line
-                f.close()
-
-            except Exception as e:
-                print(e)
-                f.close()
-                continue
-
-        if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
-            print("上传结束")
-            client.send_message(text=f"{title}\n上传结束",chat_id=info.chat.id)
-            os.remove(f"{name}.log")
-            return
-
-    return
 
 def progessbar(new, tot):
     """Builds progressbar
@@ -249,7 +195,7 @@ async def start_download_pixiv(client, message):
         print("压缩完成，开始上传")
         del_path(keywords)
         try:
-            run_upload_rclone(client=client,dir=name,title=name,info=info,file_num=1)
+            run_rclone(client=client,dir=name,title=name,info=info,file_num=1,message=info)
             print("uploading")
         except Exception as e:
             print(f"{e}")
@@ -515,7 +461,7 @@ async def start_download_pixivtele(client, message):
         await client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
 
 
-    
+
     img_list=[]
     name_list = []
 
