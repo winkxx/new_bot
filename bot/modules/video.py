@@ -94,6 +94,7 @@ class Download_video():
             sys.stdout.flush()
             run_rclone(video_name, video_name, info=self.info, file_num=1, client=self.client, message=self.info)
             os.remove(video_name)
+            self.client.delete_messages(chat_id=self.call.message.chat.id,message_ids=self.call.message.message_id)
         else:
             print(f"{video_name}发送到TG")
 
@@ -102,6 +103,7 @@ class Download_video():
             self.client.send_video(chat_id=self.call.message.chat.id,video=video_name,caption=caption ,progress=progress,
                                            progress_args=(self.client, self.info, video_name,))
             os.remove(video_name)
+            self.client.delete_messages(chat_id=self.call.message.chat.id, message_ids=self.call.message.message_id)
 
 
 
