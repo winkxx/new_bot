@@ -306,7 +306,7 @@ def run_rclone(dir,title,info,file_num,client, message):
 
 
                 if temp_text != last_line and "ETA" in last_line:
-                    print(f"上传中\n{last_line}")
+                    print(f"上传中\n{last_line} end")
                     sys.stdout.flush()
                     log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA.*?(\d.*?)",last_line , re.S)[0]
                     text=f"{title}\n" \
@@ -316,6 +316,8 @@ def run_rclone(dir,title,info,file_num,client, message):
                          f"上传速度：`{upload_speed}`\n" \
                          f"剩余时间:`{part_time}`"
                     try:
+                        print(f"修改信息 {text}")
+                        sys.stdout.flush()
                         client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
                     except Exception as e:
                         print(f"修改信息失败 {e}")
