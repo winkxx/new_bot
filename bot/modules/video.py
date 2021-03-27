@@ -3,6 +3,7 @@ import threading
 
 import youtube_dl
 from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
+from modules.control import run_rclone
 import sys
 import requests
 import os
@@ -48,7 +49,6 @@ class Download_video():
         #调用父类的构函
         self.client=client
         self.call=call
-        self.file=""
 
     def download_video(self):
         try:
@@ -63,7 +63,7 @@ class Download_video():
             print(web_url)
             sys.stdout.flush()
             ydl_opts = {
-                'format': "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio",
+                'format': "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best[ext=flv]/best' --merge-output-format mp4",
                 'quiet': True,
                 'no_warnings': True,
                 'progress_hooks': [self.download_video_status]
@@ -75,7 +75,7 @@ class Download_video():
                     download=True)
                 video_name = ydl.prepare_filename(result)
                 print(video_name)
-            
+
 
         except Exception as e:
             print(f"下载视频失败 :{e}")
@@ -88,13 +88,16 @@ class Download_video():
             print(f"{video_name}上传到网盘")
 
             sys.stdout.flush()
+            run_rclone(video_name, video_name, info=self.info, file_num=1, client=self.client, message=self.info)
+            os.remove(video_name)
         else:
             print(f"{video_name}发送到TG")
-            
+
             sys.stdout.flush()
-            os.system("ls")
+            
             self.client.send_video(chat_id=self.call.message.chat.id,video=video_name,caption=caption ,progress=progress,
-                                           progress_args=(self.client, self.info, self.file,))
+                                           progress_args=(self.client, self.info, video_name,))
+            os.remove(video_name)
 
 
 
