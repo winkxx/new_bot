@@ -293,7 +293,7 @@ def run_rclone(dir,title,info,file_num,client, message):
     # 实时输出
     temp_text=None
     while True:
-        time.sleep(1)
+        time.sleep(2)
         fname = f'{name}.log'
         with open(fname, 'r') as f:  #打开文件
             try:
@@ -304,8 +304,10 @@ def run_rclone(dir,title,info,file_num,client, message):
                     if last_line !="\n":
                         break
 
-                print (f"上传中\n{last_line}")
+
                 if temp_text != last_line and "ETA" in last_line:
+                    print(f"上传中\n{last_line}")
+                    sys.stdout.flush()
                     log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA.*?(\d.*?)",last_line , re.S)[0]
                     text=f"{title}\n" \
                          f"更新时间：`{log_time}`\n" \
