@@ -14,7 +14,9 @@ from PIL import ImageFile
 from pyrogram.types import InputMediaPhoto
 import telegraph
 from telegraph import Telegraph
-
+import datetime
+import pytz
+tz = pytz.timezone('Asia/Shanghai') #东八区
 session = requests.Session()
 header = {
     "User-Agent": "Mozilla/5.0 (Windows NT 5.8; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.86 Safari/537.36",
@@ -55,7 +57,8 @@ def compress_image(outfile, mb, quality=85, k=0.9):
 def run_upload_rclone(client,dir,title,info,file_num):
     Rclone_remote=os.environ.get('Remote')
     Upload=os.environ.get('Upload')
-
+    upload_data = datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y年%m月%d日')
+    Upload=f"{Upload}/{upload_data}"
     name=f"{str(info.message_id)}_{str(info.chat.id)}"
     if int(file_num)==1:
         shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
@@ -515,7 +518,7 @@ async def start_download_pixivtele(client, message):
         await client.edit_message_text(chat_id=info.chat.id, message_id=info.message_id, text=text, parse_mode="markdown")
 
 
-    
+
     img_list=[]
     name_list = []
 
