@@ -1,6 +1,7 @@
 
 import threading
-
+import requests
+from config import App_title
 import youtube_dl
 from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
 from modules.control import run_rclone
@@ -40,6 +41,9 @@ class Download_video():
                 try:
                     self.client.edit_message_text(text=text, chat_id=self.info.chat.id, message_id=self.info.message_id,
                                          parse_mode='markdown')
+                    print("视频正在下载,保持唤醒")
+                    print(requests.get(url=f"https://{App_title}.herokuapp.com/"))
+                    sys.stdout.flush()
                 except:
                     None
 
@@ -94,7 +98,7 @@ class Download_video():
             print(f"{video_name}发送到TG")
 
             sys.stdout.flush()
-            
+
             self.client.send_video(chat_id=self.call.message.chat.id,video=video_name,caption=caption ,progress=progress,
                                            progress_args=(self.client, self.info, video_name,))
             os.remove(video_name)
