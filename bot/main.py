@@ -70,8 +70,11 @@ async def help(client, message):
 目前测试youtube和哔哩哔哩(不包括番剧)完美适配
 
 Bot相关联系：https://t.me/Ben_chao'''
-    message.reply_text(text)
-    
+    try:
+        await client.send_message(chat_id=int(message.chat.id), text=text)
+    except Exception as e:
+        print(f"help :{e}")
+
 
 def start_bot():
     #scheduler = BlockingScheduler()
@@ -93,7 +96,7 @@ def start_bot():
     start_message_handler = MessageHandler(
         help,
         #filters=filters.command("start") & filters.user(int(Telegram_user_id))
-        filters=filters.command("help") 
+        filters=filters.command("help")
     )
 
     pixivuser_message_handler = MessageHandler(
