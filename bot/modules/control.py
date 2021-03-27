@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import pytz
 from config import aria2, BOT_name
 import sys
 from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
@@ -9,9 +9,10 @@ import threading
 import asyncio
 import subprocess
 import re
+import datetime
 
 import nest_asyncio
-
+tz = pytz.timezone('Asia/Shanghai') #东八区
 nest_asyncio.apply()
 os.system("df -lh")
 task=[]
@@ -281,7 +282,8 @@ def run_rclone(dir,title,info,file_num,client, message):
     sys.stdout.flush()
     Rclone_remote=os.environ.get('Remote')
     Upload=os.environ.get('Upload')
-
+    upload_data = datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y年%m月%d日')
+    Upload=f"{Upload}/{upload_data}"
     name=f"{str(info.message_id)}_{str(info.chat.id)}"
     if int(file_num)==1:
         shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
