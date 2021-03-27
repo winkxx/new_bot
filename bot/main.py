@@ -21,6 +21,8 @@ async def chexk_group(_, client, query):
         sys.stdout.flush()
         return True
     except:
+        text = "要使用bot,请先加入群组\nhttps://t.me/OneDrive_1oveClub"
+        await client.send_message(chat_id=int(query.chat.id), text=text)
         return False
 
 
@@ -57,91 +59,91 @@ def start_bot():
 
     pixivuser_message_handler = MessageHandler(
         start_download_pixiv,
-        filters=filters.command("pixivuser") & filters.user(int(Telegram_user_id))
+        filters=filters.command("pixivuser") & filters.create(chexk_group)
     )
 
 
     pixivid_message_handler = MessageHandler(
         start_download_id,
-        filters=filters.command("pixivpid") & filters.user(int(Telegram_user_id))
+        filters=filters.command("pixivpid") & filters.create(chexk_group)
     )
 
     magfile_message_handler = MessageHandler(
         send_telegram_file,
-        filters=filters.command("magfile") & filters.user(int(Telegram_user_id))
+        filters=filters.command("magfile") & filters.create(chexk_group)
     )
 
 
 
     http_download_message_handler = MessageHandler(
         start_http_download,
-        filters=filters.command("mirror") & filters.user(int(Telegram_user_id))
+        filters=filters.command("mirror") & filters.create(chexk_group)
     )
     magnet_download_message_handler = MessageHandler(
         start_download,
-        filters=filters.command("magnet") & filters.user(int(Telegram_user_id))
+        filters=filters.command("magnet") & filters.create(chexk_group)
     )
 
     telegram_file_message_handler = MessageHandler(
         get_telegram_file,
-        filters=filters.command("downtgfile") & filters.user(int(Telegram_user_id))
+        filters=filters.command("downtgfile") & filters.create(chexk_group)
     )
     seach_main_file_message_handler = MessageHandler(
         seach_main,
-        filters=filters.command("search") & filters.user(int(Telegram_user_id))
+        filters=filters.command("search") & filters.create(chexk_group)
     )
 
     start_download_idtg_message_handler = MessageHandler(
         start_download_pixivtg,
-        filters=filters.command("pixivusertg") & filters.user(int(Telegram_user_id))
+        filters=filters.command("pixivusertg") & filters.create(chexk_group)
     )
 
     start_http_downloadtg_message_handler = MessageHandler(
         start_http_downloadtg,
-        filters=filters.command("mirrortg") & filters.user(int(Telegram_user_id))
+        filters=filters.command("mirrortg") & filters.create(chexk_group)
     )
     start_rclonecopy_message_handler = MessageHandler(
         start_rclonecopy,
-        filters=filters.command("rclonecopy") & filters.user(int(Telegram_user_id))
+        filters=filters.command("rclonecopy") & filters.create(chexk_group)
     )
 
     start_rclonelsd_message_handler = MessageHandler(
         start_rclonelsd,
-        filters=filters.command("rclonelsd") & filters.user(int(Telegram_user_id))
+        filters=filters.command("rclonelsd") & filters.create(chexk_group)
     )
 
     start_rclone_message_handler = MessageHandler(
         start_rclonels,
-        filters=filters.command("rclone") & filters.user(int(Telegram_user_id))
+        filters=filters.command("rclone") & filters.create(chexk_group)
     )
 
     start_rclonecopyurl_message_handler = MessageHandler(
         start_rclonecopyurl,
-        filters=filters.command("rclonecopyurl") & filters.user(int(Telegram_user_id))
+        filters=filters.command("rclonecopyurl") & filters.create(chexk_group)
     )
 
     get_file_id_message_handler = MessageHandler(
         get_file_id,
-        filters=filters.command("getfileid") & filters.user(int(Telegram_user_id))
+        filters=filters.command("getfileid") & filters.create(chexk_group)
     )
     sendfile_by_id_message_handler = MessageHandler(
         sendfile_by_id,
-        filters=filters.command("getfile") & filters.user(int(Telegram_user_id))
+        filters=filters.command("getfile") & filters.create(chexk_group)
     )
 
     start_download_pixivphoto_message_handler = MessageHandler(
         start_download_pixivphoto,
-        filters=filters.command("pixivuserphoto") & filters.user(int(Telegram_user_id))
+        filters=filters.command("pixivuserphoto") & filters.create(chexk_group)
     )
 
     start_download_pixivtele_message_handler = MessageHandler(
         start_download_pixivtele,
-        filters=filters.command("pixivusertele") & filters.user(int(Telegram_user_id))
+        filters=filters.command("pixivusertele") & filters.create(chexk_group)
     )
 
     start_get_video_info_message_handler = MessageHandler(
         start_get_video_info,
-        filters=filters.command("video") & filters.user(int(Telegram_user_id))
+        filters=filters.command("video") & filters.create(chexk_group)
     )
 
     start_Resume_handler = CallbackQueryHandler(
