@@ -313,12 +313,17 @@ def run_rclone(dir,title,info,file_num,client, message):
                          f"上传进度：`{upload_Progress}`\n" \
                          f"上传速度：`{upload_speed}`\n" \
                          f"剩余时间:`{part_time}`"
-                    client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+                    try:
+                        client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
+                    except Exception as e:
+                        print(f"修改信息失败 {e}")
+                        sys.stdout.flush()
                     temp_text = last_line
                 f.close()
 
             except Exception as e:
-                print(e)
+                print(f"检查进度失败 {e}")
+                sys.stdout.flush()
                 f.close()
                 continue
 
