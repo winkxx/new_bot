@@ -193,9 +193,10 @@ async def start_download_pixiv(client, message):
         name = zip_ya(keywords)
         print(name)
         print("压缩完成，开始上传")
+        sys.stdout.flush()
         del_path(keywords)
         try:
-            run_await_rclone(client=client,dir=name,title=name,info=info,file_num=1,message=info)
+            await run_await_rclone(client=client,dir=name,title=name,info=info,file_num=1,message=info)
             print("uploading")
         except Exception as e:
             print(f"{e}")
