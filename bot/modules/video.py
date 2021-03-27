@@ -42,16 +42,7 @@ class Download_video():
                 except:
                     None
 
-        if d['status'] == 'finished':
-            filename = d['filename']
-            print(f"标记 8 {filename}")
-            if ".mp4" in filename:
-                self.file=filename
-            try:
-                self.client.edit_message_text(text=f"{filename}\n下载完成，开始上传", chat_id=self.info.chat.id, message_id=self.info.message_id,
-                                          parse_mode='markdown')
-            except:
-                None
+
 
     def __init__(self,client, call):
         #调用父类的构函
@@ -79,23 +70,30 @@ class Download_video():
             }
 
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([web_url])
+                result = ydl.extract_info(
+                    url=web_url,
+                    download=True)
+                video_name = ydl.prepare_filename(result)
+                print(video_name)
+            
 
         except Exception as e:
             print(f"下载视频失败 :{e}")
             sys.stdout.flush()
             return
-
+        self.client.edit_message_text(text=f"{video_name}\n下载完成，开始上传", chat_id=self.info.chat.id,
+                                      message_id=self.info.message_id,
+                                      parse_mode='markdown')
         if self.call.data =="videorclone":
-            print(f"{self.file}上传到网盘")
+            print(f"{video_name}上传到网盘")
 
             sys.stdout.flush()
         else:
-            print(f"{self.file}发送到TG")
-
+            print(f"{video_name}发送到TG")
+            
             sys.stdout.flush()
             os.system("ls")
-            self.client.send_video(chat_id=self.call.message.chat.id,video=self.file,caption=caption ,progress=progress,
+            self.client.send_video(chat_id=self.call.message.chat.id,video=video_name,caption=caption ,progress=progress,
                                            progress_args=(self.client, self.info, self.file,))
 
 
