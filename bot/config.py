@@ -10,7 +10,7 @@ import json
 Aria2_host="http://127.0.0.1"
 Aria2_port="8080"
 Aria2_secret=os.environ.get('Aria2_secret')
-App_title=os.environ.get('App_title')
+App_title=os.environ.get('Title')
 Telegram_bot_api=os.environ.get('Telegram_bot_api')
 Telegram_user_id=os.environ.get('Telegram_user_id')
 Api_hash=os.environ.get('Api_hash')
@@ -38,5 +38,4 @@ Bot_info=client.get_me()
 
 BOT_name=Bot_info.username
 client.stop()
-
 
