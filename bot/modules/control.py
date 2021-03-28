@@ -338,8 +338,9 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             else:
                 upload_shell=f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
-            share_url=subprocess.run(upload_shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
-                           stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1).stdout.decode('utf-8')
+
+            val=os.popen(upload_shell)
+            share_url=val.read().decode(encoding='utf-8')
             #f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\"
             await client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
 
@@ -406,9 +407,8 @@ def run_rclone(dir,title,info,file_num,client, message):
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             else:
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{upload_data}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
-            share_url = subprocess.run(upload_shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
-                                       stdout=subprocess.PIPE, universal_newlines=True, shell=True,
-                                       bufsize=1).stdout.decode('utf-8')
+            val=os.popen(upload_shell)
+            share_url=val.read().decode(encoding='utf-8')
             client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
             os.remove(f"{name}.log")
             task.remove(dir)
