@@ -35,6 +35,7 @@ async def help(client, message):
 /pixivuser - 打包下载P站画师的全部作品上传至云盘
 /pixivusertg - 压缩打包下载P站画师的全部作品发送到TG
 /pixivuserphoto - 下载P站画师的全部作品图片方式发送
+pixivusertele - 下载P站画师的全部作品网页方式发送
 在命令后加入作品ID，使用示例
 /pixivuser 9675329
 
