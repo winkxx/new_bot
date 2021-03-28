@@ -97,96 +97,96 @@ def start_bot():
     start_message_handler = MessageHandler(
         help,
         #filters=filters.command("start") & filters.user(int(Telegram_user_id))
-        filters=filters.command(["start","help"])
+        filters=filters.command(["start","help"]) & filters.private
     )
 
     pixivuser_message_handler = MessageHandler(
         start_download_pixiv,
-        filters=filters.command("pixivuser") & filters.create(chexk_group)
+        filters=filters.command("pixivuser") & filters.create(chexk_group) & filters.private 
     )
 
 
     pixivid_message_handler = MessageHandler(
         start_download_id,
-        filters=filters.command("pixivpid") & filters.create(chexk_group)
+        filters=filters.command("pixivpid") & filters.create(chexk_group) & filters.private
     )
 
     magfile_message_handler = MessageHandler(
         send_telegram_file,
-        filters=filters.command("magfile") & filters.create(chexk_group)
+        filters=filters.command("magfile") & filters.create(chexk_group) & filters.private
     )
 
 
 
     http_download_message_handler = MessageHandler(
         start_http_download,
-        filters=filters.command("mirror") & filters.create(chexk_group)
+        filters=filters.command("mirror") & filters.create(chexk_group) & filters.private
     )
     magnet_download_message_handler = MessageHandler(
         start_download,
-        filters=filters.command("magnet") & filters.create(chexk_group)
+        filters=filters.command("magnet") & filters.create(chexk_group) & filters.private
     )
 
     telegram_file_message_handler = MessageHandler(
         get_telegram_file,
-        filters=filters.command("downtgfile") & filters.create(chexk_group)
+        filters=filters.command("downtgfile") & filters.create(chexk_group) & filters.private
     )
     seach_main_file_message_handler = MessageHandler(
         seach_main,
-        filters=filters.command("search") & filters.create(chexk_group)
+        filters=filters.command("search") & filters.create(chexk_group) & filters.private
     )
 
     start_download_idtg_message_handler = MessageHandler(
         start_download_pixivtg,
-        filters=filters.command("pixivusertg") & filters.create(chexk_group)
+        filters=filters.command("pixivusertg") & filters.create(chexk_group) & filters.private
     )
 
     start_http_downloadtg_message_handler = MessageHandler(
         start_http_downloadtg,
-        filters=filters.command("mirrortg") & filters.create(chexk_group)
+        filters=filters.command("mirrortg") & filters.create(chexk_group) & filters.private
     )
     start_rclonecopy_message_handler = MessageHandler(
         start_rclonecopy,
-        filters=filters.command("rclonecopy") & filters.create(chexk_group)
+        filters=filters.command("rclonecopy") & filters.create(chexk_group) & filters.private
     )
 
     start_rclonelsd_message_handler = MessageHandler(
         start_rclonelsd,
-        filters=filters.command("rclonelsd") & filters.create(chexk_group)
+        filters=filters.command("rclonelsd") & filters.create(chexk_group) & filters.private
     )
 
     start_rclone_message_handler = MessageHandler(
         start_rclonels,
-        filters=filters.command("rclone") & filters.create(chexk_group)
+        filters=filters.command("rclone") & filters.create(chexk_group) & filters.private
     )
 
     start_rclonecopyurl_message_handler = MessageHandler(
         start_rclonecopyurl,
-        filters=filters.command("rclonecopyurl") & filters.create(chexk_group)
+        filters=filters.command("rclonecopyurl") & filters.create(chexk_group) & filters.private
     )
 
     get_file_id_message_handler = MessageHandler(
         get_file_id,
-        filters=filters.command("getfileid") & filters.create(chexk_group)
+        filters=filters.command("getfileid") & filters.create(chexk_group) & filters.private
     )
     sendfile_by_id_message_handler = MessageHandler(
         sendfile_by_id,
-        filters=filters.command("getfile") & filters.create(chexk_group)
+        filters=filters.command("getfile") & filters.create(chexk_group) & filters.private
     )
 
     start_download_pixivphoto_message_handler = MessageHandler(
         start_download_pixivphoto,
-        filters=filters.command("pixivuserphoto") & filters.create(chexk_group)
+        filters=filters.command("pixivuserphoto") & filters.create(chexk_group) & filters.private
     )
 
     start_download_pixivtele_message_handler = MessageHandler(
         start_download_pixivtele,
-        filters=filters.command("pixivusertele") & filters.create(chexk_group)
+        filters=filters.command("pixivusertele") & filters.create(chexk_group) & filters.private
     )
 
     start_get_video_info_message_handler = MessageHandler(
         start_get_video_info,
-        filters=filters.command("video") & filters.create(chexk_group)
+        filters=filters.command("video") & filters.create(chexk_group) & filters.private
     )
 
     start_Resume_handler = CallbackQueryHandler(
