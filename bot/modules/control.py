@@ -308,7 +308,7 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 if temp_text != last_line and "ETA" in last_line:
                     print(f"上传中\n{last_line} end")
                     sys.stdout.flush()
-                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA(\d.*?)",last_line , re.S)[0]
+                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?),.*?ETA(.*)",last_line , re.S)[0]
                     text=f"{title}\n" \
                          f"更新时间：`{log_time}`\n" \
                          f"上传部分：`{file_part}`\n" \
@@ -340,7 +340,7 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 upload_shell=f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
 
             val=os.popen(upload_shell)
-            share_url=val.read().decode(encoding='utf-8')
+            share_url=val.read()
             #f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\"
             await client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
 
@@ -384,13 +384,13 @@ def run_rclone(dir,title,info,file_num,client, message):
 
                 print (f"上传中\n{last_line}")
                 if temp_text != last_line and "ETA" in last_line:
-                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA(.*?)",last_line , re.S)[0]
+                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?),.*?ETA(.*)",last_line , re.S)[0]
                     text=f"{title}\n" \
                          f"更新时间：`{log_time}`\n" \
                          f"上传部分：`{file_part}`\n" \
                          f"上传进度：`{upload_Progress}`\n" \
                          f"上传速度：`{upload_speed}`\n" \
-                         f"剩余时间:`{part_time}`"
+                         f"剩余时间:`{part_time}`\n"
                     client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
                     temp_text = last_line
                 f.close()
@@ -408,7 +408,7 @@ def run_rclone(dir,title,info,file_num,client, message):
             else:
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{upload_data}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             val=os.popen(upload_shell)
-            share_url=val.read().decode(encoding='utf-8')
+            share_url=val.read()
             client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
             os.remove(f"{name}.log")
             task.remove(dir)
