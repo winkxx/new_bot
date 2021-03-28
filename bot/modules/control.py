@@ -287,6 +287,7 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
     else:
         shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}/{title}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
     print(shell)
+    sys.stdout.flush()
     cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
                            stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1)
     # 实时输出
@@ -307,7 +308,7 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 if temp_text != last_line and "ETA" in last_line:
                     print(f"上传中\n{last_line} end")
                     sys.stdout.flush()
-                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA.*?(\d.*?)",last_line , re.S)[0]
+                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA(\d.*?)",last_line , re.S)[0]
                     text=f"{title}\n" \
                          f"更新时间：`{log_time}`\n" \
                          f"上传部分：`{file_part}`\n" \
@@ -337,8 +338,8 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             else:
                 upload_shell=f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
-            share_url=subprocess.run(upload_shell, check=True, stdout=subprocess.PIPE).stdout.decode(
-                'utf-8')
+            share_url=subprocess.run(upload_shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
+                           stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1).stdout.decode('utf-8')
             #f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\"
             await client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
 
@@ -356,13 +357,14 @@ def run_rclone(dir,title,info,file_num,client, message):
     Rclone_remote=os.environ.get('Remote')
     Upload=os.environ.get('Upload')
     upload_data = datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y年%m月%d日')
-    Upload=f"{Upload}/{upload_data}"
+    Upload = f"{Upload}/{upload_data}"
     name=f"{str(info.message_id)}_{str(info.chat.id)}"
     if int(file_num)==1:
         shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
     else:
         shell=f"rclone copy \"{dir}\" \"{Rclone_remote}:{Upload}/{title}\"  -v --stats-one-line --stats=1s --log-file=\"{name}.log\" "
     print(shell)
+    sys.stdout.flush()
     cmd = subprocess.Popen(shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
                            stdout=subprocess.PIPE, universal_newlines=True, shell=True, bufsize=1)
     # 实时输出
@@ -381,7 +383,7 @@ def run_rclone(dir,title,info,file_num,client, message):
 
                 print (f"上传中\n{last_line}")
                 if temp_text != last_line and "ETA" in last_line:
-                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA.*?(\d.*?)",last_line , re.S)[0]
+                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA(.*?)",last_line , re.S)[0]
                     text=f"{title}\n" \
                          f"更新时间：`{log_time}`\n" \
                          f"上传部分：`{file_part}`\n" \
@@ -403,9 +405,10 @@ def run_rclone(dir,title,info,file_num,client, message):
                 file_name = os.path.basename(dir)
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             else:
-                upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
-            share_url = subprocess.run(upload_shell, check=True, stdout=subprocess.PIPE).stdout.decode(
-                'utf-8')
+                upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{upload_data}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
+            share_url = subprocess.run(upload_shell, stdin=subprocess.PIPE, stderr=sys.stderr, close_fds=True,
+                                       stdout=subprocess.PIPE, universal_newlines=True, shell=True,
+                                       bufsize=1).stdout.decode('utf-8')
             client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
             os.remove(f"{name}.log")
             task.remove(dir)
