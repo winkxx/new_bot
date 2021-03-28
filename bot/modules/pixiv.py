@@ -3,9 +3,7 @@ import os
 import sys
 import requests
 import zipfile
-import time
-import re
-import subprocess
+import threading
 import sys
 import io
 import os
@@ -14,7 +12,7 @@ from PIL import ImageFile
 from pyrogram.types import InputMediaPhoto
 import telegraph
 from telegraph import Telegraph
-from modules.control import run_rclone
+from modules.control import run_await_rclone
 
 session = requests.Session()
 header = {
@@ -136,6 +134,8 @@ def del_path(path):
         # print( 'delete dir %s' % path)
 
 
+
+
 async def start_download_pixiv(client, message):
 
         print(message)
@@ -193,9 +193,10 @@ async def start_download_pixiv(client, message):
         name = zip_ya(keywords)
         print(name)
         print("压缩完成，开始上传")
+        sys.stdout.flush()
         del_path(keywords)
         try:
-            run_rclone(client=client,dir=name,title=name,info=info,file_num=1,message=info)
+            await run_await_rclone(client=client,dir=name,title=name,info=info,file_num=1,message=info)
             print("uploading")
         except Exception as e:
             print(f"{e}")
