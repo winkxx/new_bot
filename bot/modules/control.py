@@ -94,7 +94,8 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 if temp_text != last_line and "ETA" in last_line:
                     print(f"上传中\n{last_line} end")
                     sys.stdout.flush()
-                    log_time,file_part,upload_Progress,upload_speed,part_time=re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?s).*?ETA.*?(\d.*?)",last_line , re.S)[0]
+                    log_time, file_part, upload_Progress, upload_speed, part_time = re.findall("(.*?)INFO.*?(\d.*?),.*?(\d+%),.*?(\d.*?),.*?ETA(.*)", last_line, re.S)[0]
+
                     text=f"{title}\n" \
                          f"更新时间：`{log_time}`\n" \
                          f"上传部分：`{file_part}`\n" \
@@ -138,7 +139,7 @@ def the_download(client, message,url):
             client.send_message(chat_id=message.chat.id,text="No link provided!",parse_mode='Markdown')
             return None
     prevmessagemag = None
-    info=client.send_message(chat_id=message.chat.id,text="Downloading",parse_mode='markdown')
+    info=client.send_message(chat_id=message.chat.id,text="添加任务",parse_mode='markdown')
 
     inline_keyboard = [
         [
@@ -150,7 +151,7 @@ def the_download(client, message,url):
     ]
 
     reply_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-    client.edit_message_text(text="Downloading", chat_id=info.chat.id, message_id=info.message_id,
+    client.edit_message_text(text="排队中", chat_id=info.chat.id, message_id=info.message_id,
                              parse_mode='markdown', reply_markup=reply_markup)
 
 
@@ -170,7 +171,7 @@ def the_download(client, message,url):
                          f"Peers:{download.connections}\n" \
                          f"Speed {hum_convert(download.download_speed)}/s\n" \
                          f"{barop}\n" \
-                         f"Free:{get_free_space_mb()}GB"
+                         f"剩余空间:{get_free_space_mb()}GB"
             if prevmessagemag != updateText:
                 print(updateText)
                 client.edit_message_text(text=updateText,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown', reply_markup=reply_markup)
@@ -263,7 +264,7 @@ def the_download(client, message,url):
                              f"Peers:{currdownload.connections}\n" \
                              f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
                              f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
+                             f"剩余空间:{get_free_space_mb()}GB"
 
                 if prevmessage != updateText:
                     print(f"更新状态\n{updateText}")
@@ -287,7 +288,7 @@ def the_download(client, message,url):
                              f"Peers:{currdownload.connections}\n" \
                              f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
                              f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
+                             f"剩余空间:{get_free_space_mb()}GB"
 
                 if prevmessage != updateText:
                     print(f"更新状态\n{updateText}")
@@ -485,7 +486,7 @@ def file_download(client, message,file_dir):
                              f"Peers:{currdownload.connections}\n" \
                              f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
                              f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
+                             f"剩余空间:{get_free_space_mb()}GB"
 
                 if prevmessage != updateText:
                     print(f"更新状态\n{updateText}")
@@ -509,7 +510,7 @@ def file_download(client, message,file_dir):
                              f"Peers:{currdownload.connections}\n" \
                              f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
                              f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
+                             f"剩余空间:{get_free_space_mb()}GB"
 
                 if prevmessage != updateText:
                     print(f"更新状态\n{updateText}")
@@ -543,7 +544,7 @@ def file_download(client, message,file_dir):
 def http_download(client, message,url):
     try:
         currdownload = aria2.add_uris([url])
-        info = client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
+        info = client.send_message(chat_id=message.chat.id, text="添加任务", parse_mode='markdown')
     except Exception as e:
         print(e)
         if (str(e).endswith("No URI to download.")):
@@ -568,7 +569,7 @@ def http_download(client, message,url):
     ]
 
     new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
-    client.edit_message_text(text="Downloading", chat_id=info.chat.id, message_id=info.message_id,
+    client.edit_message_text(text="排队中", chat_id=info.chat.id, message_id=info.message_id,
                              parse_mode='markdown', reply_markup=new_reply_markup)
 
 
@@ -611,7 +612,7 @@ def http_download(client, message,url):
                              f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
                              f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
                              f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
+                             f"剩余空间:{get_free_space_mb()}GB"
 
                 if prevmessage != updateText:
                     print(f"更新状态\n{updateText}")
@@ -634,7 +635,7 @@ def http_download(client, message,url):
                              f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
                              f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
                              f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
+                             f"剩余空间:{get_free_space_mb()}GB"
 
                 if prevmessage != updateText:
                     print(f"更新状态\n{updateText}")
@@ -752,7 +753,7 @@ def send_telegram_file(client, message):
 def http_downloadtg(client, message,url):
     try:
         currdownload = aria2.add_uris([url])
-        info = client.send_message(chat_id=message.chat.id, text="开始下载", parse_mode='markdown')
+        info = client.send_message(chat_id=message.chat.id, text="添加任务", parse_mode='markdown')
     except Exception as e:
         print(e)
         if (str(e).endswith("No URI to download.")):
@@ -777,7 +778,7 @@ def http_downloadtg(client, message,url):
     ]
 
     new_reply_markup = InlineKeyboardMarkup(inline_keyboard=new_inline_keyboard)
-    client.edit_message_text(text="Downloading", chat_id=info.chat.id, message_id=info.message_id,
+    client.edit_message_text(text="排队中", chat_id=info.chat.id, message_id=info.message_id,
                              parse_mode='markdown', reply_markup=new_reply_markup)
 
 
@@ -820,7 +821,7 @@ def http_downloadtg(client, message,url):
                              f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
                              f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
                              f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
+                             f"剩余空间:{get_free_space_mb()}GB"
 
                 if prevmessage != updateText:
                     print(f"更新状态\n{updateText}")
@@ -843,7 +844,7 @@ def http_downloadtg(client, message,url):
                              f"Progress : {hum_convert(currdownload.completed_length)}/{hum_convert(currdownload.total_length)} \n" \
                              f"Speed {hum_convert(currdownload.download_speed)}/s\n" \
                              f"{barop}\n" \
-                             f"Free:{get_free_space_mb()}GB"
+                             f"剩余空间:{get_free_space_mb()}GB"
 
                 if prevmessage != updateText:
                     print(f"更新状态\n{updateText}")
