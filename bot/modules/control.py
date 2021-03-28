@@ -314,7 +314,7 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                          f"上传部分：`{file_part}`\n" \
                          f"上传进度：`{upload_Progress}`\n" \
                          f"上传速度：`{upload_speed}`\n" \
-                         f"剩余时间:`{part_time}`"
+                         f"剩余时间:`{part_time}`\n"
                     try:
                         print(f"修改信息 {text}")
                         sys.stdout.flush()
