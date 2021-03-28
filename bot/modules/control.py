@@ -332,7 +332,9 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
 
         if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
             print("上传结束")
-            client.send_message(text=f"{title}\n上传结束",chat_id=info.chat.id)
+            share_url = os.system(f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\" ")
+            await client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
+            
             os.remove(f"{name}.log")
             task.remove(dir)
             return
@@ -390,7 +392,8 @@ def run_rclone(dir,title,info,file_num,client, message):
 
         if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
             print("上传结束")
-            client.send_message(text=f"{title}\n上传结束",chat_id=info.chat.id)
+            share_url = os.system(f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\" ")
+            client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
             os.remove(f"{name}.log")
             task.remove(dir)
             return
