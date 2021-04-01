@@ -1,5 +1,10 @@
 #!/bin/bash
 
+service caddy start
+yes "4" | bash status.sh s
+
+yes "4" | bash status.sh c
+
 
 touch /root/.aria2/aria2.session
 chmod 0777 /root/.aria2/ -R
