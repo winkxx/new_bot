@@ -33,37 +33,19 @@ def proxyget():
     #http://127.0.0.1:5000/jsonrpc?jsonrpc=2.0&method=aria2.getGlobalStat&id=QXJpYU5nXzE2MTM4ODAwNTBfMC44NTY2NjkzOTUyMjEzNDg3&params=WyJ0b2tlbjp3Y3k5ODE1MSJd&
     return get(url=url,params=par).content
 
-@app.route('/',methods=['GET','POST','DELETE'])
+@app.route('/<path:path>',methods=['GET'])
+def proxy(path):
+    if flask.request.method == 'GET':
+        resp = requests.get(f'{main_site}{path}')
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items() if name.lower() not in excluded_headers]
+        response = Response(resp.content, resp.status_code, headers)
+        return response
+
+@app.route('/', methods=['GET'])
 def index():
-    print(f'{main_site}')
     if flask.request.method == 'GET':
         resp = requests.get(f'{main_site}')
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        headers = [(name, value) for (name, value) in resp.raw.headers.items() if name.lower() not in excluded_headers]
-        response = Response(resp.content, resp.status_code, headers)
-        return response
-    elif flask.request.method=='POST':
-        resp = requests.post(f'{main_site}',json=flask.request.get_json())
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        headers = [(name, value) for (name, value) in resp.raw.headers.items() if name.lower() not in excluded_headers]
-        response = Response(resp.content, resp.status_code, headers)
-        return response
-@app.route('/<path:path>',methods=['GET','POST','DELETE'])
-def proxy(path):
-
-
-    if flask.request.method == 'GET':
-        resp = requests.get(f'{SITE_NAME}{path}')
-        print(f'GET {SITE_NAME}{path}')
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        headers = [(name, value) for (name, value) in resp.raw.headers.items() if name.lower() not in excluded_headers]
-        response = Response(resp.content, resp.status_code, headers)
-        return response
-    elif flask.request.method=='POST':
-        print(f' POST {SITE_NAME}{path}')
-        print(flask.request.form)
-
-        resp = requests.post(f'{SITE_NAME}{path}',json=flask.request.get_json())
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items() if name.lower() not in excluded_headers]
         response = Response(resp.content, resp.status_code, headers)
@@ -71,5 +53,5 @@ def proxy(path):
 
 if __name__ == '__main__':
 
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT'))
     app.run(host='0.0.0.0', port=port, debug=True)
