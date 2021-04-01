@@ -725,7 +725,7 @@ async def temp_telegram_file(client, message):
     else:
         try:
 
-            file_dir = await client.download_media(message=answer, progress=progress)
+            file_dir = await client.download_media(message=answer)
             print(file_dir)
             sys.stdout.flush()
             return file_dir
