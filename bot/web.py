@@ -1,4 +1,4 @@
-from flask import Flask,Response
+from flask import Flask,Response,send_file
 from requests import get,post
 import flask,requests
 import os
@@ -21,7 +21,9 @@ def proxypost():
     #获取到POST过来的数据，因为我这里传过来的数据需要转换一下编码。根据晶具体情况而定
     return (post(url=url,data=student).content)
 
-
+app.route('/about', methods=['GET'])
+def index():
+    return send_file("index.html")
 
 @app.route('/jsonrpc/',methods=['GET'])
 def proxyget():
