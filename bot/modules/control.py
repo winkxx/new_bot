@@ -726,10 +726,12 @@ async def temp_telegram_file(client, message):
         try:
 
             file_dir = await client.download_media(message=answer, progress=progress)
-
+            print(file_dir)
+            sys.stdout.flush()
             return file_dir
         except Exception as e:
             print(f"{e}")
+            sys.stdout.flush()
             await client.send_message(text="下载文件失败", chat_id=message.chat.id, parse_mode='markdown')
             return "False"
 
