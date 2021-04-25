@@ -314,7 +314,7 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                          f"上传部分：`{file_part}`\n" \
                          f"上传进度：`{upload_Progress}`\n" \
                          f"上传速度：`{upload_speed}`\n" \
-                         f"剩余时间:`{part_time}`\n"
+                         f"剩余时间: `{part_time}` \n"
                     try:
                         print(f"修改信息 {text}")
                         sys.stdout.flush()
@@ -332,7 +332,7 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 continue
 
         if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
-            print("上传结束，")
+            print("上传结束---")
             if int(file_num) == 1:
                 file_name=os.path.basename(dir)
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
