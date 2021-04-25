@@ -403,12 +403,15 @@ def run_rclone(dir,title,info,file_num,client, message):
                 continue
 
         if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
-            print("上传结束")
+            print("上传结束---")
             if int(file_num) == 1:
                 file_name = os.path.basename(dir)
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             else:
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{upload_data}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
+            print("开始获取分享链接")
+            print(upload_shell)
+            sys.stdout.flush()
             val=os.popen(upload_shell)
             share_url=val.read()
             client.send_message(text=f"{title}\n上传结束\n文件链接：{share_url}",chat_id=info.chat.id)
