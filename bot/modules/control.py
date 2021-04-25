@@ -408,7 +408,7 @@ def run_rclone(dir,title,info,file_num,client, message):
                 file_name = os.path.basename(dir)
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             else:
-                upload_shell = f"rclone link  \"{Rclone_remote}:{upload_data}/{title}/\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
+                upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{title}/\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             print("开始获取分享链接")
             print(upload_shell)
             sys.stdout.flush()
