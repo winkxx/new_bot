@@ -338,7 +338,8 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             else:
                 upload_shell=f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
-
+            print(upload_shell)
+            sys.stdout.flush()
             val=os.popen(upload_shell)
             share_url=val.read()
             #f"rclone link  \"{Rclone_remote}:{Upload}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\"
