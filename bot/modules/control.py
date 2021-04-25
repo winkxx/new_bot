@@ -332,7 +332,7 @@ async def run_await_rclone(dir,title,info,file_num,client, message):
                 continue
 
         if subprocess.Popen.poll(cmd) == 0:  # 判断子进程是否结束
-            print("上传结束")
+            print("上传结束，")
             if int(file_num) == 1:
                 file_name=os.path.basename(dir)
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
