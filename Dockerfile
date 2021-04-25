@@ -26,7 +26,7 @@ COPY root /
 
 RUN pip3 install -r requirements.txt
 
-#COPY bot /bot
+
 
 RUN sudo chmod 777 /root/.aria2/
 RUN sudo chmod 777 /rclone
