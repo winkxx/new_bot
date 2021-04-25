@@ -392,7 +392,7 @@ def run_rclone(dir,title,info,file_num,client, message):
                          f"上传部分：`{file_part}`\n" \
                          f"上传进度：`{upload_Progress}`\n" \
                          f"上传速度：`{upload_speed}`\n" \
-                         f"剩余时间:`{part_time}`\n"
+                         f"剩余时间: `{part_time}` \n"
                     client.edit_message_text(text=text,chat_id=info.chat.id,message_id=info.message_id,parse_mode='markdown')
                     temp_text = last_line
                 f.close()
@@ -408,7 +408,7 @@ def run_rclone(dir,title,info,file_num,client, message):
                 file_name = os.path.basename(dir)
                 upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{file_name}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             else:
-                upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{upload_data}/{title}\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
+                upload_shell = f"rclone link  \"{Rclone_remote}:{Upload}/{upload_data}/{title}/\" --onedrive-link-scope=\"organization\"  --onedrive-link-type=\"view\""
             print("开始获取分享链接")
             print(upload_shell)
             sys.stdout.flush()
