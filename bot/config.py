@@ -37,5 +37,5 @@ client.send_message(chat_id=int(Telegram_user_id), text="Bot上线！！！")
 Bot_info=client.get_me()
 
 BOT_name=Bot_info.username
-#client.stop()
+client.stop()
 
