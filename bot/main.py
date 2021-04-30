@@ -34,7 +34,7 @@ async def test(client, message):
 
 def start_bot():
     scheduler = BlockingScheduler()
-    #scheduler = BackgroundScheduler()
+    scheduler = BackgroundScheduler()
 
     scheduler.add_job(new_clock, "interval", seconds=60)
     scheduler.add_job(second_clock, "interval", seconds=60)
@@ -52,7 +52,7 @@ def start_bot():
     start_message_handler = MessageHandler(
         test,
         filters=filters.command("start") & filters.user(int(Telegram_user_id))
-        #filters=filters.command("start") & filters.create(chexk_group)
+        filters=filters.command("start") & filters.create(chexk_group)
     )
 
     pixivuser_message_handler = MessageHandler(
