@@ -1,4 +1,4 @@
-FROM benchao/newubuntu:1.0
+FROM ubuntu
 
 RUN apt-get update
 RUN apt-get install sudo
