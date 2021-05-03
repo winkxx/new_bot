@@ -15,6 +15,13 @@ from modules.video import start_get_video_info
 import hashlib
 import os
 #import md5 #Python2里的引用
+import socket
+
+# 获取本机计算机名称
+hostname = socket.gethostname()
+# 获取本机ip
+ip = socket.gethostbyname(hostname)
+print(ip)
 
 
 
