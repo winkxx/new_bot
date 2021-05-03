@@ -5,7 +5,7 @@ import os
 
 status =""
 app = Flask(__name__)
-SITE_NAME = 'http://127.0.0.1:8080/'
+#SITE_NAME = 'http://127.0.0.1:8080/'
 
 main_site= 'http://127.0.0.1:5000/'
 
